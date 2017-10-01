@@ -8,7 +8,25 @@ use Laravel\Scout\Builder;
 
 class XunsearchEngine extends Engine
 {
+    private $server_host;
+    private $server_index_port = 8383;
+    private $server_search_port = 8384;
+    private $default_charset = 'utf-8';
+
     protected $xss = [];
+
+    public function __construct($config = [])
+    {
+        if (isset($config['server_host'])) {
+            $this->server_host = $config['server_host'];
+        }
+        if (isset($config['server_index_port'])) {
+            $this->server_index_port = $config['server_index_port'];
+        }
+        if (isset($config['server_search_port'])) {
+            $this->server_search_port = $config['server_search_port'];
+        }
+    }
 
     /**
      * Update the given model in the index.
@@ -183,9 +201,9 @@ class XunsearchEngine extends Engine
 
         $str =
             'project.name = '.$app_name. "\n".
-            'project.default_charset = utf-8'. "\n".
-            'server.index = 8383' . "\n".
-            'server.search = 8384'. "\n".
+            'project.default_charset = ' . $this->default_charset . "\n".
+            'server.index = ' . ($this->server_host ? $this->server_host . ':' : '') . $this->server_index_port . "\n".
+            'server.search = ' . ($this->server_host ? $this->server_host . ':' : '') . $this->server_search_port . "\n".
             '';
 
         $types = [];
