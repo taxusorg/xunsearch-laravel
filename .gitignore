@@ -54,3 +54,7 @@ Temporary Items
 # =========================
 /vendor/
 /composer.lock
+
+# Env
+# =========================
+/.env
