@@ -23,7 +23,7 @@ class XunsearchEngine extends Engine
             $doc->setField('XSDocKey', $model->getKey());
             $doc->setField($model->getKeyName(), $model->getKey());
             $doc->setFields($model->toSearchableArray());
-            $this->getXS($model)->index->update($doc);//dd($this->getXS($model));
+            $this->getXS($model)->index->update($doc);
         }
     }
 
@@ -36,9 +36,6 @@ class XunsearchEngine extends Engine
     public function delete($models)
     {
         foreach ($models as $model) {
-            //$doc = new \XSDocument();
-            //$doc->setField($model->getKeyName(), $model->getKey());
-            //$doc->setFields($model->toSearchableArray());
             $this->getXS($model)->index->del($model->getKey());
         }
     }
