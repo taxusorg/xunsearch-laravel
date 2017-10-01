@@ -1,0 +1,25 @@
+{
+    "name": "taxusorg/xunsearch-laravel",
+    "description": "xunsearch",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "taxusorg",
+            "email": "taxus@taxus.org"
+        }
+    ],
+    "require": {
+        "Laravel/Scout": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Taxusorg\\XunsearchLaravel\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "v1.0.x-dev"
+        }
+    }
+}

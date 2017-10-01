@@ -48,4 +48,9 @@ Temporary Items
 
 # PhpStorm
 # =========================
-.idea/
+/.idea/
+
+# Composer
+# =========================
+/vendor/
+/composer.lock
