@@ -124,7 +124,11 @@ class XunSearchEngine extends Engine
             );
         }
 
-        return ['docs' => $search->search($this->buildQuery($builder)), 'total' => $search->getLastCount()];
+        return ['docs' => $search
+            ->setFuzzy(boolval($builder->xunsearch_parameters['fuzzy']))
+            ->search($this->buildQuery($builder)),
+            'total' => $search->getLastCount()
+        ];
     }
 
     protected function buildQuery(Builder $builder)
