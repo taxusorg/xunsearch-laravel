@@ -1,7 +1,7 @@
 <?php
-namespace Taxusorg\XunsearchLaravel\Contracts;
+namespace Taxusorg\XunSearchLaravel\Contracts;
 
-interface Xunsearch
+interface XunSearch
 {
     const XUNSEARCH_TYPE_STRING = 'string';
     const XUNSEARCH_TYPE_NUMERIC = 'numeric';

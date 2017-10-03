@@ -1,12 +1,12 @@
 <?php
-namespace Taxusorg\XunsearchLaravel\Engines;
+namespace Taxusorg\XunSearchLaravel\Engines;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Scout\Engines\Engine;
 use Laravel\Scout\Builder;
 
-class XunsearchEngine extends Engine
+class XunSearchEngine extends Engine
 {
     private $server_host;
     private $server_index_port = 8383;

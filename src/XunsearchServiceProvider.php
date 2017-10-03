@@ -1,11 +1,11 @@
 <?php
-namespace Taxusorg\XunsearchLaravel;
+namespace Taxusorg\XunSearchLaravel;
 
-use Taxusorg\XunsearchLaravel\Engines\XunsearchEngine;
+use Taxusorg\XunSearchLaravel\Engines\XunSearchEngine;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Scout\EngineManager;
 
-class XunsearchServiceProvider extends ServiceProvider
+class XunSearchServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.

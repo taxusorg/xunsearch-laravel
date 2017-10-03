@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Taxusorg\\XunsearchLaravel\\": "src/"
+            "Taxusorg\\XunSearchLaravel\\": "src/"
         }
     },
     "extra": {
