@@ -30,6 +30,9 @@ class XunSearchEngine extends Engine
         if (isset($config['server_search_port'])) {
             $this->server_search_port = $config['server_search_port'];
         }
+        if (isset($config['default_charset'])) {
+            $this->default_charset = $config['default_charset'];
+        }
     }
 
     /**
