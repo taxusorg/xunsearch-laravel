@@ -41,6 +41,4 @@ interface XunSearch
      * ]
      */
     public function scoutFieldsType();
-
-    public static function cleanSearchable();
 }
