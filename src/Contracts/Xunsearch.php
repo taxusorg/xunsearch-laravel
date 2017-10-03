@@ -21,4 +21,26 @@ interface XunSearch
     const XUNSEARCH_TOKENIZER_XLEN = 'xlen';
     const XUNSEARCH_TOKENIZER_XSTEP = 'xstep';
     const XUNSEARCH_TOKENIZER_SCWS = 'scws';
+
+    /**
+     * @return array
+     *
+     * Example [
+     *      'title' => [
+     *          'type'=>self::XUNSEARCH_TYPE_TITLE,
+     *          'tokenizer'=>self::XUNSEARCH_TOKENIZER_XLEN,
+     *          'tokenizer_value'=>2,
+     *      ],
+     *      'body' => [
+     *          'type'=>self::XUNSEARCH_TYPE_BODY,
+     *      ],
+     *      'data' => [
+     *          'type'=>self::XUNSEARCH_TYPE_DATE,
+     *          'index'=>self::XUNSEARCH_INDEX_NONE,
+     *      ],
+     * ]
+     */
+    public function scoutFieldsType();
+
+    public static function cleanSearchable();
 }
