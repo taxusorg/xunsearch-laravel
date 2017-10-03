@@ -14,9 +14,11 @@ class XunSearchServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/xunsearch.php', 'xunsearch');
+
         $this->app->extend(EngineManager::class, function (EngineManager $obj, $app) {
-            return $obj->extend('xunsearch', function () {
-                return new XunsearchEngine();
+            return $obj->extend('xunsearch', function () use ($app) {
+                return new XunSearchEngine($app->config['xunsearch']);
             });
         });
     }

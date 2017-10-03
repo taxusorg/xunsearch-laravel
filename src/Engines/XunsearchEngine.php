@@ -1,17 +1,21 @@
 <?php
 namespace Taxusorg\XunSearchLaravel\Engines;
 
+use \XS as XunSearch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Scout\Engines\Engine;
 use Laravel\Scout\Builder;
+use Taxusorg\XunSearchLaravel\Contracts\XunSearch as XunSearchContract;
 
 class XunSearchEngine extends Engine
 {
-    private $server_host;
+    private $server_host = '127.0.0.1';
     private $server_index_port = 8383;
     private $server_search_port = 8384;
     private $default_charset = 'utf-8';
+
+    protected $doc_key_name = 'XSDocKey';
 
     protected $xss = [];
 
@@ -38,7 +42,7 @@ class XunSearchEngine extends Engine
     {
         foreach ($models as $model) {
             $doc = new \XSDocument();
-            $doc->setField('XSDocKey', $model->getKey());
+            $doc->setField($this->doc_key_name, $model->getKey());
             $doc->setField($model->getKeyName(), $model->getKey());
             $doc->setFields($model->toSearchableArray());
             $this->getXS($model)->index->update($doc);
@@ -53,9 +57,18 @@ class XunSearchEngine extends Engine
      */
     public function delete($models)
     {
-        foreach ($models as $model) {
-            $this->getXS($model)->index->del($model->getKey());
-        }
+        if (!$models->isEmpty())
+            $this->getXS($models->first())->index->del($models->pluck($models->first()->getKeyName())->toArray());
+    }
+
+    /**
+     * Delete all data.
+     *
+     * @param Model $model
+     */
+    public function clean(Model $model)
+    {
+        $this->getXS($model)->index->clean();
     }
 
     /**
@@ -67,7 +80,6 @@ class XunSearchEngine extends Engine
     public function search(Builder $builder)
     {
         return $this->performSearch($builder, array_filter([
-            //'numericFilters' => $this->filters($builder),
             'hitsPerPage' => $builder->limit,
         ]));
     }
@@ -83,8 +95,7 @@ class XunSearchEngine extends Engine
     public function paginate(Builder $builder, $perPage, $page)
     {
         return $this->performSearch($builder, array_filter([
-            //'numericFilters' => $this->filters($builder),
-            'hitsPerPage' => $builder->limit ?: $perPage,
+            'hitsPerPage' => $perPage,
             'page' => $page - 1,
         ]));
     }
@@ -94,22 +105,32 @@ class XunSearchEngine extends Engine
         $search = $this->getXS($builder->model)->search;
 
         if (isset($options['hitsPerPage'])) {
-            if (isset($options['page'])) {
+            if (isset($options['page']) && $options['page'] > 0) {
                 $search->setLimit($options['hitsPerPage'], $options['hitsPerPage'] * $options['page']);
             }else{
                 $search->setLimit($options['hitsPerPage']);
             }
         }
 
-        return ['docs' => $search->search($builder->query), 'total' => $search->getLastCount()];
-        /*if ($builder->callback) {
+        if ($builder->callback) {
             return call_user_func(
                 $builder->callback,
-                $algolia,
-                $builder->query,
+                $search,
+                $this->buildQuery($builder),
                 $options
             );
-        }*/
+        }
+
+        return ['docs' => $search->search($this->buildQuery($builder)), 'total' => $search->getLastCount()];
+    }
+
+    protected function buildQuery(Builder $builder)
+    {
+        $wheres = collect($builder->wheres)->map(function ($value, $key) {
+            return $key.':'.$value;
+        })->values();
+
+        return trim($builder->query) . ' ' . $wheres->implode(' ');
     }
 
     /**
@@ -120,7 +141,7 @@ class XunSearchEngine extends Engine
      */
     public function mapIds($results)
     {
-        return collect($results['docs'])->pluck('XSDocKey')->values();
+        return collect($results['docs'])->pluck($this->doc_key_name)->values();
     }
 
     /**
@@ -143,25 +164,10 @@ class XunSearchEngine extends Engine
             $model->getQualifiedKeyName(), $keys
         )->get()->keyBy($model->getKeyName());
 
-        if (method_exists($model, 'scoutFieldsType') && method_exists($model, 'scoutBodyResultField')) {
-            $types = $model->scoutFieldsType();
-            foreach($types as $field=>$field_type) {
-                if (in_array('body', $field_type)) $body_field = $field;
-            }
-        }
-
-        return Collection::make($results['docs'])->map(function ($doc) use ($model, $models, $body_field) {
+        return Collection::make($results['docs'])->map(function ($doc) use ($model, $models) {
             $key = $doc[$model->getKeyName()];
 
             if (isset($models[$key])) {
-                if ($body_field) {
-                    $search = $this->getXS($model)->search;
-                    if ($model->scoutBodyResultField()) {
-                        $models[$key][$model->scoutBodyResultField()] = $search->highlight($doc[$body_field]);
-                    } else {
-                        $models[$key][$body_field] = $search->highlight($doc[$body_field]);
-                    }
-                }
                 return $models[$key];
             }
             return false;
@@ -189,37 +195,47 @@ class XunSearchEngine extends Engine
         if (isset($this->xss[$app_name]))
             return $this->xss[$app_name];
 
-        return $this->xss[$app_name] = new \XS($this->buildIni($app_name, $model));
+        return $this->xss[$app_name] = new XunSearch($this->buildIni($app_name, $model));
     }
 
     /**
-     * build ini
+     * Build ini.
      */
     protected function buildIni($app_name, Model $model)
     {
-        $array = $model->toSearchableArray();
-
         $str =
-            'project.name = '.$app_name. "\n".
-            'project.default_charset = ' . $this->default_charset . "\n".
-            'server.index = ' . ($this->server_host ? $this->server_host . ':' : '') . $this->server_index_port . "\n".
-            'server.search = ' . ($this->server_host ? $this->server_host . ':' : '') . $this->server_search_port . "\n".
-            '';
+        'project.name = '.$app_name. "\n".
+        'project.default_charset = ' . $this->default_charset . "\n".
+        'server.index = ' . ($this->server_host ? $this->server_host . ':' : '') . $this->server_index_port . "\n".
+        'server.search = ' . ($this->server_host ? $this->server_host . ':' : '') . $this->server_search_port . "\n".
+        '';
 
-        $types = [];
-        if (method_exists($model, 'scoutFieldsType')) {
-            $types = $model->scoutFieldsType();
-        }
-
-        //$casts = getCasts();
         $str .= "\n[".$model->getKeyName()."]\ntype = id\n";
 
-        foreach ($array as $key=>$value) {
-            $str .= "\n[$key]\n";
-            if (array_key_exists($key, $types)) $str .= 'type = ' . $types[$key]['type'] . "\n";
+        if ($model instanceof XunSearchContract) {
+            $types = $model->scoutFieldsType();
+
+            foreach ($types as $key=>$value) {
+                $str .= "\n[$key]\n";
+                if (isset($types[$key]['type'])) $str .= 'type = ' . $types[$key]['type'] . "\n";
+                if (isset($types[$key]['index'])) $str .= 'index = ' . $types[$key]['index'] . "\n";
+                if (isset($types[$key]['tokenizer'])) {
+                    if (in_array($types[$key]['tokenizer'], [
+                        XunSearchContract::XUNSEARCH_TOKENIZER_FULL,
+                        XunSearchContract::XUNSEARCH_TOKENIZER_NONE,
+                    ])) {
+                        $str .= 'tokenizer = ' . $types[$key]['tokenizer'] . "\n";
+                    } else {
+                        $str .= 'tokenizer = ' .$types[$key]['tokenizer'].
+                            '('.$types[$key]['tokenizer_value'].')' . "\n";
+                    }
+                } elseif (isset($types[$key]['tokenizer_value'])) {
+                    $str .= 'tokenizer = ' .XunSearchContract::XUNSEARCH_TOKENIZER_SCWS.
+                        '('.$types[$key]['tokenizer_value'].')' . "\n";
+                }
+            }
         }
 
         return $str;
     }
-
 }
