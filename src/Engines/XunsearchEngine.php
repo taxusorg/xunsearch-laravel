@@ -215,7 +215,7 @@ class XunSearchEngine extends Engine
     /**
      * Build ini.
      */
-    protected function buildIni($app_name, Model $model)
+    protected function buildIni($app_name, XunSearchContract $model)
     {
         $str =
         'project.name = '.$app_name. "\n".
@@ -226,44 +226,42 @@ class XunSearchEngine extends Engine
 
         $str .= "\n[".$this->doc_key_name."]\ntype = id\n";
 
-        if ($model instanceof XunSearchContract) {
-            $types = $model->searchableFieldsType();
+        $types = $model->searchableFieldsType();
 
-            $count_title = $count_body = 0;
-            foreach ($types as $key=>$value) {
-                if ($key == $this->doc_key_name)
-                    throw new \Error("The field '$key' same as XunSearch doc_key_name.
-                    You can change XunSearch doc_key_name in app->config['xunsearch']['doc_key_name']");
-                if ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_ID)
-                    throw new \Error("The field '$key' must not be 'id'.
-                    Type 'id' has be setting as default by engine.
-                    Set the type as numeric or string in Model->searchableFieldsType(),
-                    if you want it to be use in Searchable");
-                if ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_TITLE)
-                    $count_title++;
-                elseif ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_BODY)
-                    $count_body++;
-                if ($count_title > 1 || $count_body > 1)
-                    throw new \Error("'title' or 'body' can only be set once.
-                    Fix it in Model->searchableFieldsType()");
+        $count_title = $count_body = 0;
+        foreach ($types as $key=>$value) {
+            if ($key == $this->doc_key_name)
+                throw new \Error("The field '$key' same as XunSearch doc_key_name.
+                You can change XunSearch doc_key_name in app->config['xunsearch']['doc_key_name']");
+            if ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_ID)
+                throw new \Error("The field '$key' must not be 'id'.
+                Type 'id' has be setting as default by engine.
+                Set the type as numeric or string in Model->searchableFieldsType(),
+                if you want it to be use in Searchable");
+            if ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_TITLE)
+                $count_title++;
+            elseif ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_BODY)
+                $count_body++;
+            if ($count_title > 1 || $count_body > 1)
+                throw new \Error("'title' or 'body' can only be set once.
+                Fix it in Model->searchableFieldsType()");
 
-                $str .= "\n[$key]\n";
-                if (isset($types[$key]['type'])) $str .= 'type = ' . $types[$key]['type'] . "\n";
-                if (isset($types[$key]['index'])) $str .= 'index = ' . $types[$key]['index'] . "\n";
-                if (isset($types[$key]['tokenizer'])) {
-                    if (in_array($types[$key]['tokenizer'], [
-                        XunSearchContract::XUNSEARCH_TOKENIZER_FULL,
-                        XunSearchContract::XUNSEARCH_TOKENIZER_NONE,
-                    ])) {
-                        $str .= 'tokenizer = ' . $types[$key]['tokenizer'] . "\n";
-                    } else {
-                        $str .= 'tokenizer = ' .$types[$key]['tokenizer'].
-                            '('.$types[$key]['tokenizer_value'].')' . "\n";
-                    }
-                } elseif (isset($types[$key]['tokenizer_value'])) {
-                    $str .= 'tokenizer = ' .XunSearchContract::XUNSEARCH_TOKENIZER_SCWS.
+            $str .= "\n[$key]\n";
+            if (isset($types[$key]['type'])) $str .= 'type = ' . $types[$key]['type'] . "\n";
+            if (isset($types[$key]['index'])) $str .= 'index = ' . $types[$key]['index'] . "\n";
+            if (isset($types[$key]['tokenizer'])) {
+                if (in_array($types[$key]['tokenizer'], [
+                    XunSearchContract::XUNSEARCH_TOKENIZER_FULL,
+                    XunSearchContract::XUNSEARCH_TOKENIZER_NONE,
+                ])) {
+                    $str .= 'tokenizer = ' . $types[$key]['tokenizer'] . "\n";
+                } else {
+                    $str .= 'tokenizer = ' .$types[$key]['tokenizer'].
                         '('.$types[$key]['tokenizer_value'].')' . "\n";
                 }
+            } elseif (isset($types[$key]['tokenizer_value'])) {
+                $str .= 'tokenizer = ' .XunSearchContract::XUNSEARCH_TOKENIZER_SCWS.
+                    '('.$types[$key]['tokenizer_value'].')' . "\n";
             }
         }
 
