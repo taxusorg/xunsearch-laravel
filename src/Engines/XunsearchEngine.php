@@ -142,10 +142,6 @@ class XunSearchEngine extends Engine
             $query .= ' ' . $key.':'.$value;
         });
 
-        $or_wheres = collect($builder->or_wheres)->map(function ($value, $key) use (&$query) {
-            $query .= ' OR '.$key.':'.$value;
-        });
-
         return $query;
     }
 
