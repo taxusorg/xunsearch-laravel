@@ -23,7 +23,7 @@ trait XunSearchTrait
 
     public function registerScoutRangeSearch()
     {
-        Builder::macro('rangeSearch', function ($word, $from, $to) {
+        Builder::macro('range', function ($word, $from, $to) {
             $this->ranges[$word]['from'] = $from;
             $this->ranges[$word]['to'] = $to;
 
