@@ -12,16 +12,16 @@ trait XunSearchTrait
      */
     public static function bootXunSearchTrait()
     {
-        (new static)->registerScoutMacros();
+        (new static)->registerSearchableMacros();
     }
 
-    public function registerScoutMacros()
+    public function registerSearchableMacros()
     {
-        $this->registerScoutRangeSearch();
-        $this->registerScoutFuzzy();
+        $this->registerSearchableRangeSearch();
+        $this->registerSearchableFuzzy();
     }
 
-    public function registerScoutRangeSearch()
+    public function registerSearchableRangeSearch()
     {
         Builder::macro('range', function ($word, $from, $to) {
             $this->ranges[$word]['from'] = $from;
@@ -31,7 +31,7 @@ trait XunSearchTrait
         });
     }
 
-    public function registerScoutFuzzy()
+    public function registerSearchableFuzzy()
     {
         Builder::macro('fuzzy', function () {
             $this->fuzzy = true;
