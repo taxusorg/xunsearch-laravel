@@ -12,10 +12,10 @@ trait XunSearchTrait
      */
     public static function bootXunSearchTrait()
     {
-        (new static)->registerSearchableMacros();
+        (new static)->registerXunSearchMacros();
     }
 
-    public function registerSearchableMacros()
+    public function registerXunSearchMacros()
     {
         $this->registerSearchableRangeSearch();
         $this->registerSearchableFuzzy();
@@ -44,5 +44,15 @@ trait XunSearchTrait
     {
         $self = new static();
         $self->searchableUsing()->clean($self);
+    }
+
+    public function getSearchableKeyName()
+    {
+        return null;
+    }
+
+    public function getSearchableKey()
+    {
+        return $this->getKey();
     }
 }
