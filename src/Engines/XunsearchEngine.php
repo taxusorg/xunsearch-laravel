@@ -124,12 +124,14 @@ class XunSearchEngine extends Engine
             );
         }
 
-        return ['docs' => $search
-            ->setFuzzy(boolval($builder->fuzzy))
-            ->setQuery($this->buildQuery($builder))
-            ->search(),
-            'total' => $search->getLastCount()
-        ];
+        $search->setFuzzy(boolval($builder->fuzzy))
+            ->setQuery($this->buildQuery($builder));
+
+        $ranges = collect($builder->ranges)->map(function ($value, $key) use ($search) {
+            $search->addRange($key, $value['from'], $value['to']);
+        });
+
+        return ['docs' => $search->search(), 'total' => $search->getLastCount()];
     }
 
     protected function buildQuery(Builder $builder)
@@ -138,7 +140,11 @@ class XunSearchEngine extends Engine
             return $key.':'.$value;
         })->values();
 
-        return trim($builder->query) . ' ' . $wheres->implode(' ');
+        $or_wheres = collect($builder->or_wheres)->map(function ($value, $key) {
+            return 'OR '.$key.':'.$value;
+        })->values();
+
+        return trim($builder->query) . ' ' . $wheres->implode(' ') . $or_wheres->implode(' ');
     }
 
     /**
