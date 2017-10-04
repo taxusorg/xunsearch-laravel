@@ -26,13 +26,18 @@ interface XunSearch
      * @return array
      *
      * Example [
+     *      'id' => [
+     *          'type'=>self::XUNSEARCH_TYPE_NUMERIC,
+     *      ],
      *      'title' => [
      *          'type'=>self::XUNSEARCH_TYPE_TITLE,
-     *          'tokenizer'=>self::XUNSEARCH_TOKENIZER_XLEN,
-     *          'tokenizer_value'=>2,
      *      ],
      *      'body' => [
      *          'type'=>self::XUNSEARCH_TYPE_BODY,
+     *      ],
+     *      'field' => [
+     *          'tokenizer'=>self::XUNSEARCH_TOKENIZER_XLEN,
+     *          'tokenizer_value'=>2,
      *      ],
      *      'data' => [
      *          'type'=>self::XUNSEARCH_TYPE_DATE,
@@ -40,5 +45,5 @@ interface XunSearch
      *      ],
      * ]
      */
-    public function scoutFieldsType();
+    public function searchableFieldsType();
 }

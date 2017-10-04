@@ -227,7 +227,7 @@ class XunSearchEngine extends Engine
         $str .= "\n[".$this->doc_key_name."]\ntype = id\n";
 
         if ($model instanceof XunSearchContract) {
-            $types = $model->scoutFieldsType();
+            $types = $model->searchableFieldsType();
 
             $count_title = $count_body = 0;
             foreach ($types as $key=>$value) {
@@ -237,7 +237,7 @@ class XunSearchEngine extends Engine
                 if ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_ID)
                     throw new \Error("The field '$key' must not be 'id'.
                     Type 'id' has be setting as default by engine.
-                    Set the type as numeric or string in Model->scoutFieldsType(),
+                    Set the type as numeric or string in Model->searchableFieldsType(),
                     if you want it to be use in Searchable");
                 if ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_TITLE)
                     $count_title++;
@@ -245,7 +245,7 @@ class XunSearchEngine extends Engine
                     $count_body++;
                 if ($count_title > 1 || $count_body > 1)
                     throw new \Error("'title' or 'body' can only be set once.
-                    Fix it in Model->scoutFieldsType()");
+                    Fix it in Model->searchableFieldsType()");
 
                 $str .= "\n[$key]\n";
                 if (isset($types[$key]['type'])) $str .= 'type = ' . $types[$key]['type'] . "\n";
