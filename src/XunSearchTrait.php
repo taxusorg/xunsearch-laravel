@@ -18,7 +18,7 @@ trait XunSearchTrait
     public function registerScoutMacros()
     {
         Builder::macro('fuzzy', function () {
-            $this->xunsearch_parameters['fuzzy'] = true;
+            $this->fuzzy = true;
 
             return $this;
         });

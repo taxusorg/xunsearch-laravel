@@ -125,8 +125,9 @@ class XunSearchEngine extends Engine
         }
 
         return ['docs' => $search
-            ->setFuzzy(boolval($builder->xunsearch_parameters['fuzzy']))
-            ->search($this->buildQuery($builder)),
+            ->setFuzzy(boolval($builder->fuzzy))
+            ->setQuery($this->buildQuery($builder))
+            ->search(),
             'total' => $search->getLastCount()
         ];
     }
