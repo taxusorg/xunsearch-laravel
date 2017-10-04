@@ -127,7 +127,7 @@ class XunSearchEngine extends Engine
         $search->setFuzzy(boolval($builder->fuzzy))
             ->setQuery($this->buildQuery($builder));
 
-        $ranges = collect($builder->ranges)->map(function ($value, $key) use ($search) {
+        $ranges = collect($builder->ranges)->map(function ($value, $key) use ($search, $builder) {
             $search->addRange($key, $value['from'], $value['to']);
         });
 
@@ -136,15 +136,17 @@ class XunSearchEngine extends Engine
 
     protected function buildQuery(Builder $builder)
     {
-        $wheres = collect($builder->wheres)->map(function ($value, $key) {
-            return $key.':'.$value;
-        })->values();
+        $query = $builder->query;
 
-        $or_wheres = collect($builder->or_wheres)->map(function ($value, $key) {
-            return 'OR '.$key.':'.$value;
-        })->values();
+        $wheres = collect($builder->wheres)->map(function ($value, $key) use (&$query) {
+            $query .= ' ' . $key.':'.$value;
+        });
 
-        return trim($builder->query) . ' ' . $wheres->implode(' ') . $or_wheres->implode(' ');
+        $or_wheres = collect($builder->or_wheres)->map(function ($value, $key) use (&$query) {
+            $query .= ' OR '.$key.':'.$value;
+        });
+
+        return $query;
     }
 
     /**
