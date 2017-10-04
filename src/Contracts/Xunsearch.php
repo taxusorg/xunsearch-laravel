@@ -23,9 +23,9 @@ interface XunSearch
     const XUNSEARCH_TOKENIZER_SCWS = 'scws';
 
     /**
-     * @return array
+     * Setting Fields.
      *
-     * Example [
+     * @Example [
      *      'id' => [
      *          'type'=>self::XUNSEARCH_TYPE_NUMERIC,
      *      ],
@@ -44,6 +44,7 @@ interface XunSearch
      *          'index'=>self::XUNSEARCH_INDEX_NONE,
      *      ],
      * ]
+     * @return array
      */
     public function searchableFieldsType();
 }

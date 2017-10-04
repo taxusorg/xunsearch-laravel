@@ -201,6 +201,9 @@ class XunSearchEngine extends Engine
 
     /**
      * Get XS
+     *
+     * @param Model $model
+     * @return XunSearch
      */
     protected function getXS(Model $model)
     {
@@ -214,6 +217,10 @@ class XunSearchEngine extends Engine
 
     /**
      * Build ini.
+     * @param string $app_name
+     * @param XunSearchContract $model
+     * @throws \Error
+     * @return string
      */
     protected function buildIni($app_name, XunSearchContract $model)
     {
