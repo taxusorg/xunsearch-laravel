@@ -50,9 +50,4 @@ trait XunSearchTrait
     {
         return null;
     }
-
-    public function getSearchableKey()
-    {
-        return $this->getKey();
-    }
 }
