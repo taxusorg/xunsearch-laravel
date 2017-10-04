@@ -15,7 +15,7 @@ class XunSearchEngine extends Engine
     private $server_search_port = 8384;
     private $default_charset = 'utf-8';
 
-    protected $doc_key_name = 'XSDocKey';
+    protected $doc_key_name = 'xunsearch_obj_id';
 
     protected $xss = [];
 
@@ -33,6 +33,9 @@ class XunSearchEngine extends Engine
         if (isset($config['default_charset'])) {
             $this->default_charset = $config['default_charset'];
         }
+        if (isset($config['doc_key_name']) && $config['doc_key_name']) {
+            $this->doc_key_name = $config['doc_key_name'];
+        }
     }
 
     /**
@@ -46,7 +49,6 @@ class XunSearchEngine extends Engine
         foreach ($models as $model) {
             $doc = new \XSDocument();
             $doc->setField($this->doc_key_name, $model->getKey());
-            $doc->setField($model->getKeyName(), $model->getKey());
             $doc->setFields($model->toSearchableArray());
             $this->getXS($model)->index->update($doc);
         }
@@ -170,14 +172,14 @@ class XunSearchEngine extends Engine
         }
 
         $keys = collect($results['docs'])
-            ->pluck($model->getKeyName())->values()->all();
+            ->pluck($this->doc_key_name)->values()->all();
 
         $models = $model->whereIn(
             $model->getQualifiedKeyName(), $keys
         )->get()->keyBy($model->getKeyName());
 
         return Collection::make($results['docs'])->map(function ($doc) use ($model, $models) {
-            $key = $doc[$model->getKeyName()];
+            $key = $doc[$this->doc_key_name];
 
             if (isset($models[$key])) {
                 return $models[$key];
@@ -222,7 +224,7 @@ class XunSearchEngine extends Engine
         'server.search = ' . ($this->server_host ? $this->server_host . ':' : '') . $this->server_search_port . "\n".
         '';
 
-        $str .= "\n[".$model->getKeyName()."]\ntype = id\n";
+        $str .= "\n[".$this->doc_key_name."]\ntype = id\n";
 
         if ($model instanceof XunSearchContract) {
             $types = $model->scoutFieldsType();
