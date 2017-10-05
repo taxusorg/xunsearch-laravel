@@ -45,9 +45,4 @@ trait XunSearchTrait
         $self = new static();
         $self->searchableUsing()->clean($self);
     }
-
-    public function getSearchableKeyName()
-    {
-        return null;
-    }
 }
