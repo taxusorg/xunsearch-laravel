@@ -11,7 +11,9 @@ use Taxusorg\XunSearchLaravel\Contracts\XunSearch as XunSearchContract;
 class XunSearchEngine extends Engine
 {
     private $server_host = '127.0.0.1';
+    private $server_index_host = null;
     private $server_index_port = 8383;
+    private $server_search_host = null;
     private $server_search_port = 8384;
     private $default_charset = 'utf-8';
 
@@ -24,8 +26,14 @@ class XunSearchEngine extends Engine
         if (isset($config['server_host'])) {
             $this->server_host = $config['server_host'];
         }
+        if (isset($config['server_index_host'])) {
+            $this->server_index_host = $config['server_index_host'];
+        }
         if (isset($config['server_index_port'])) {
             $this->server_index_port = $config['server_index_port'];
+        }
+        if (isset($config['server_search_host'])) {
+            $this->server_search_host = $config['server_search_host'];
         }
         if (isset($config['server_search_port'])) {
             $this->server_search_port = $config['server_search_port'];
@@ -227,8 +235,10 @@ class XunSearchEngine extends Engine
         $str =
         'project.name = '.$app_name. "\n".
         'project.default_charset = ' . $this->default_charset . "\n".
-        'server.index = ' . ($this->server_host ? $this->server_host . ':' : '') . $this->server_index_port . "\n".
-        'server.search = ' . ($this->server_host ? $this->server_host . ':' : '') . $this->server_search_port . "\n".
+        'server.index = ' . ($this->server_index_host ? $this->server_index_host . ':' :
+            ($this->server_host ? $this->server_host . ':' : '')) . $this->server_index_port . "\n".
+        'server.search = ' . ($this->server_search_host ? $this->server_search_host . ':' :
+            ($this->server_host ? $this->server_host . ':' : '')) . $this->server_search_port . "\n".
         '';
 
         $str .= "\n[".$this->doc_key_name."]\ntype = id\n";
