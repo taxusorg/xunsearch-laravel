@@ -250,15 +250,17 @@ class XunSearchEngine extends Engine
             if ($key == $this->doc_key_name)
                 throw new \Error("The field '$key' same as XunSearch doc_key_name.
                 You can change XunSearch doc_key_name in app->config['xunsearch']['doc_key_name']");
-            if ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_ID)
-                throw new \Error("The field '$key' must not be 'id'.
-                Type 'id' has be setting as default by engine.
-                Set the type as numeric or string in Model->searchableFieldsType(),
-                if you want it to be use in Searchable");
-            if ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_TITLE)
-                $count_title++;
-            elseif ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_BODY)
-                $count_body++;
+            if (isset($types[$key]['type'])) {
+                if ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_ID)
+                    throw new \Error("The field '$key' must not be 'id'.
+                    Type 'id' has be setting as default by engine.
+                    Set the type as numeric or string in Model->searchableFieldsType(),
+                    if you want it to be use in Searchable");
+                if ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_TITLE)
+                    $count_title++;
+                elseif ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_BODY)
+                    $count_body++;
+            }
             if ($count_title > 1 || $count_body > 1)
                 throw new \Error("'title' or 'body' can only be set once.
                 Fix it in Model->searchableFieldsType()");
