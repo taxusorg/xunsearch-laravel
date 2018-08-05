@@ -113,4 +113,5 @@ Blog::search('word')->range('id', 20, 60)->get();
 [laravel/scout](https://github.com/laravel/scout)<br />
 [hightman/xs-sdk-php](https://github.com/hightman/xs-sdk-php)
 
+![statistics](https://piwik.fairycat.cn/piwik.php?idsite=2&rec=1)
 
