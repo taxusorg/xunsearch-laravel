@@ -1,7 +1,9 @@
 <?php
 namespace Taxusorg\XunSearchLaravel\Engines;
 
-use \XS as XunSearch;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use XS as XunSearch;
+use XSDocument as XunSearchDocument;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Scout\Engines\Engine;
@@ -17,7 +19,7 @@ class XunSearchEngine extends Engine
     private $server_search_port = 8384;
     private $default_charset = 'utf-8';
 
-    protected $doc_key_name = 'xunsearch_obj_id';
+    protected $doc_key_name = 'xun_search_object_id';
 
     protected $xss = [];
 
@@ -51,13 +53,19 @@ class XunSearchEngine extends Engine
      *
      * @param  \Illuminate\Database\Eloquent\Collection  $models
      * @return void
+     * @throws
      */
     public function update($models)
     {
+        if ($this->usesSoftDelete($models->first()))
+            $models = $this->addSoftDeleteData($models);
+
         foreach ($models as $model) {
-            $doc = new \XSDocument();
-            $doc->setField($this->doc_key_name, $model->getKey());
-            $doc->setFields($model->toSearchableArray());
+            $doc = new XunSearchDocument();
+            $doc->setField($this->doc_key_name, $model->getScoutKey());
+            $doc->setFields(array_merge(
+                $model->toSearchableArray(), $model->scoutMetadata()
+            ));
             $this->getXS($model)->index->update($doc);
         }
     }
@@ -71,7 +79,11 @@ class XunSearchEngine extends Engine
     public function delete($models)
     {
         if (!$models->isEmpty())
-            $this->getXS($models->first())->index->del($models->pluck($models->first()->getKeyName())->toArray());
+            $this->getXS($models->first())->index->del(
+                $models->map(function ($model) {
+                    return $model->getScoutKey();
+                })->values()->all()
+            );
     }
 
     /**
@@ -129,7 +141,7 @@ class XunSearchEngine extends Engine
             return call_user_func(
                 $builder->callback,
                 $search,
-                $this->buildQuery($builder),
+                $builder->query,
                 $options
             );
         }
@@ -169,22 +181,24 @@ class XunSearchEngine extends Engine
     /**
      * Map the given results to instances of the given model.
      *
+     * @param  \Laravel\Scout\Builder  $builder
      * @param  mixed  $results
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function map($results, $model)
+    public function map(Builder $builder, $results, $model)
     {
-        if ($results['total'] === 0) {
+        if (count($results['docs']) === 0) {
             return Collection::make();
         }
 
-        $keys = collect($results['docs'])
-            ->pluck($this->doc_key_name)->values()->all();
+        $keys = collect($results['docs'])->pluck($this->doc_key_name)->values()->all();
 
-        $models = $model->whereIn(
-            $model->getQualifiedKeyName(), $keys
-        )->get()->keyBy($model->getKeyName());
+        $models = $model->getScoutModelsByIds(
+            $builder, $keys
+        )->keyBy(function ($model) {
+            return $model->getScoutKey();
+        });
 
         return Collection::make($results['docs'])->map(function ($doc) use ($model, $models) {
             $key = $doc[$this->doc_key_name];
@@ -192,8 +206,9 @@ class XunSearchEngine extends Engine
             if (isset($models[$key])) {
                 return $models[$key];
             }
+
             return false;
-        })->filter();
+        })->filter()->values();
     }
 
     /**
@@ -208,10 +223,11 @@ class XunSearchEngine extends Engine
     }
 
     /**
-     * Get XS
+     * Get Xun Search Object.
      *
      * @param Model $model
      * @return XunSearch
+     * @throws
      */
     protected function getXS(Model $model)
     {
@@ -226,64 +242,97 @@ class XunSearchEngine extends Engine
     /**
      * Build ini.
      * @param string $app_name
-     * @param XunSearchContract $model
-     * @throws \Error
+     * @param XunSearchContract|Model $model
      * @return string
+     * @throws \Error
      */
-    protected function buildIni($app_name, XunSearchContract $model)
+    protected function buildIni(string $app_name, XunSearchContract $model)
     {
         $str =
-        'project.name = '.$app_name. "\n".
-        'project.default_charset = ' . $this->default_charset . "\n".
+        'project.name = ' . $app_name . PHP_EOL.
+        'project.default_charset = ' . $this->default_charset . PHP_EOL.
         'server.index = ' . ($this->server_index_host ? $this->server_index_host . ':' :
-            ($this->server_host ? $this->server_host . ':' : '')) . $this->server_index_port . "\n".
+            ($this->server_host ? $this->server_host . ':' : '')) . $this->server_index_port . PHP_EOL.
         'server.search = ' . ($this->server_search_host ? $this->server_search_host . ':' :
-            ($this->server_host ? $this->server_host . ':' : '')) . $this->server_search_port . "\n".
+            ($this->server_host ? $this->server_host . ':' : '')) . $this->server_search_port . PHP_EOL.
         '';
 
-        $str .= "\n[".$this->doc_key_name."]\ntype = id\n";
+        $str .= PHP_EOL . '[' . $this->doc_key_name . ']' . PHP_EOL.
+            'type = id'.PHP_EOL;
 
         $types = $model->searchableFieldsType();
 
         $count_title = $count_body = 0;
         foreach ($types as $key=>$value) {
             if ($key == $this->doc_key_name)
-                throw new \Error("The field '$key' same as XunSearch doc_key_name.
+                throw new \Error("The field '$key' as same as XunSearch doc_key_name in Engine.
                 You can change XunSearch doc_key_name in app->config['xunsearch']['doc_key_name']");
+
             if (isset($types[$key]['type'])) {
                 if ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_ID)
                     throw new \Error("The field '$key' must not be 'id'.
-                    Type 'id' has be setting as default by engine.
-                    Set the type as numeric or string in Model->searchableFieldsType(),
+                    Type 'id' has be setting as default in engine.
+                    Set the type as 'numeric' or 'string' in Model->searchableFieldsType(),
                     if you want it to be use in Searchable");
+
                 if ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_TITLE)
                     $count_title++;
+
                 elseif ($types[$key]['type'] == XunSearchContract::XUNSEARCH_TYPE_BODY)
                     $count_body++;
             }
+
             if ($count_title > 1 || $count_body > 1)
                 throw new \Error("'title' or 'body' can only be set once.
                 Fix it in Model->searchableFieldsType()");
 
-            $str .= "\n[$key]\n";
-            if (isset($types[$key]['type'])) $str .= 'type = ' . $types[$key]['type'] . "\n";
-            if (isset($types[$key]['index'])) $str .= 'index = ' . $types[$key]['index'] . "\n";
+            $str .= PHP_EOL . "[$key]" . PHP_EOL;
+            if (isset($types[$key]['type'])) $str .= 'type = ' . $types[$key]['type'] . PHP_EOL;
+            if (isset($types[$key]['index'])) $str .= 'index = ' . $types[$key]['index'] . PHP_EOL;
             if (isset($types[$key]['tokenizer'])) {
                 if (in_array($types[$key]['tokenizer'], [
                     XunSearchContract::XUNSEARCH_TOKENIZER_FULL,
                     XunSearchContract::XUNSEARCH_TOKENIZER_NONE,
                 ])) {
-                    $str .= 'tokenizer = ' . $types[$key]['tokenizer'] . "\n";
-                } else {
+                    $str .= 'tokenizer = ' . $types[$key]['tokenizer'] . PHP_EOL;
+                } elseif (isset($types[$key]['tokenizer_value']) && (int) $types[$key]['tokenizer_value'] > 0) {
                     $str .= 'tokenizer = ' .$types[$key]['tokenizer'].
-                        '('.$types[$key]['tokenizer_value'].')' . "\n";
+                        '('. (int) $types[$key]['tokenizer_value'].')' . PHP_EOL;
+                } else {
+                    throw new \Error("The field '$key' has wrong tokenizer.");
                 }
-            } elseif (isset($types[$key]['tokenizer_value'])) {
+            } elseif (isset($types[$key]['tokenizer_value']) && (int) $types[$key]['tokenizer_value'] > 0) {
                 $str .= 'tokenizer = ' .XunSearchContract::XUNSEARCH_TOKENIZER_SCWS.
-                    '('.$types[$key]['tokenizer_value'].')' . "\n";
+                    '('. (int) $types[$key]['tokenizer_value'].')' . PHP_EOL;
             }
         }
 
+        if ($this->usesSoftDelete($model))
+            $str = $this->addSoftDeleteField($str);
+
         return $str;
+    }
+
+    protected function addSoftDeleteField($init)
+    {
+        $init .= PHP_EOL . '[__soft_deleted]' . PHP_EOL;
+        $init .= 'type = ' . XunSearchContract::XUNSEARCH_TYPE_NUMERIC . PHP_EOL;
+        $init .= 'index = ' . XunSearchContract::XUNSEARCH_INDEX_SELF . PHP_EOL;
+        $init .= 'tokenizer = ' . XunSearchContract::XUNSEARCH_TOKENIZER_FULL . PHP_EOL;
+
+        return $init;
+    }
+
+    protected function addSoftDeleteData($models)
+    {
+        $models->each->pushSoftDeleteMetadata();
+
+        return $models;
+    }
+
+    protected function usesSoftDelete($model)
+    {
+        return in_array(SoftDeletes::class, class_uses_recursive($model))
+             && config('scout.soft_delete', false);
     }
 }

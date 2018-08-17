@@ -25,7 +25,10 @@ interface XunSearch
     /**
      * Setting Fields.
      *
-     * @Example [
+     * @see http://www.xunsearch.com/doc/php/guide/ini.guide
+     * @return array
+     * @example
+     * return [
      *      'id' => [
      *          'type'=>self::XUNSEARCH_TYPE_NUMERIC,
      *      ],
@@ -44,7 +47,6 @@ interface XunSearch
      *          'index'=>self::XUNSEARCH_INDEX_NONE,
      *      ],
      * ]
-     * @return array
      */
     public function searchableFieldsType();
 }
