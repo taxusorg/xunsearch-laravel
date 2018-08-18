@@ -1,7 +1,7 @@
 <?php
 namespace Taxusorg\XunSearchLaravel\Contracts;
 
-interface XunSearch
+interface XunSearchInterface
 {
     const XUNSEARCH_TYPE_STRING = 'string';
     const XUNSEARCH_TYPE_NUMERIC = 'numeric';
@@ -18,6 +18,7 @@ interface XunSearch
     const XUNSEARCH_TOKENIZER_DEFAULT = 'default';
     const XUNSEARCH_TOKENIZER_NONE = 'none';
     const XUNSEARCH_TOKENIZER_FULL = 'full';
+    const XUNSEARCH_TOKENIZER_SPLIT = 'split';
     const XUNSEARCH_TOKENIZER_XLEN = 'xlen';
     const XUNSEARCH_TOKENIZER_XSTEP = 'xstep';
     const XUNSEARCH_TOKENIZER_SCWS = 'scws';

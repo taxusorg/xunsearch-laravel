@@ -13,7 +13,7 @@ class SimpleTest extends TestCase
     {
         global $manager;
 
-        $builder = SearchModel::search('test');
+        $builder = SearchInterfaceModel::search('test');
 
         $result = $builder->get();
 
