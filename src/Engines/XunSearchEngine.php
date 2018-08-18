@@ -2,14 +2,14 @@
 namespace Taxusorg\XunSearchLaravel\Engines;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Taxusorg\XunSearchLaravel\Contracts\XunSearchInterface;
-use Taxusorg\XunSearchLaravel\IniBuilder;
-use XS as XunSearch;
-use XSDocument as XunSearchDocument;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Scout\Engines\Engine;
 use Laravel\Scout\Builder;
+use XS as XunSearch;
+use XSDocument as XunSearchDocument;
+use Taxusorg\XunSearchLaravel\Contracts\XunSearchInterface;
+use Taxusorg\XunSearchLaravel\IniBuilder;
 
 class XunSearchEngine extends Engine
 {
@@ -228,6 +228,7 @@ class XunSearchEngine extends Engine
 
     /**
      * Build ini.
+     *
      * @param string $app_name
      * @param XunSearchInterface|Model $model
      * @return string
