@@ -49,5 +49,5 @@ interface XunSearchInterface
      *      ],
      * ]
      */
-    public function searchableFieldsType();
+    public function xunSearchFieldsType();
 }

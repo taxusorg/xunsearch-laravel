@@ -23,7 +23,7 @@ class IniBuilder
     {
         $str = static::header($app_name, $config);
         $str .= static::keyField($doc_key_name);
-        $str .= static::fields($model->searchableFieldsType(), $doc_key_name);
+        $str .= static::fields($model->xunSearchFieldsType(), $doc_key_name);
 
         return $str;
     }

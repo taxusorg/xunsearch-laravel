@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 use Taxusorg\XunSearchLaravel\Contracts\XunSearchInterface;
@@ -10,6 +11,15 @@ class SearchInterfaceModel extends Model implements XunSearchInterface
 {
     use Searchable;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope('test_scope', function(Builder $builder) {
+            $builder->where('age', '>', 200);
+        });
+    }
+
     public function searchableUsing()
     {
         global $manager;
@@ -17,7 +27,7 @@ class SearchInterfaceModel extends Model implements XunSearchInterface
         return $manager->driver('xunsearch');
     }
 
-    public function searchableFieldsType()
+    public function xunSearchFieldsType()
     {
         return [
             'id' => [
