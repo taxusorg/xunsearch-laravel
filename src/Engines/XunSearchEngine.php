@@ -44,7 +44,7 @@ class XunSearchEngine extends Engine
      */
     public function update($models)
     {
-        if ($this->usesSoftDelete($models->first()))
+        if ($this->checkUsesSoftDelete($models->first()))
             $models = $this->addSoftDeleteData($models);
 
         foreach ($models as $model) {
@@ -238,22 +238,19 @@ class XunSearchEngine extends Engine
     {
         $ini = IniBuilder::buildIni($app_name, $this->doc_key_name, $model, $this->config);
 
-        if ($this->usesSoftDelete($model))
-            $ini = $this->addSoftDeleteField($ini);
+        if ($this->checkUsesSoftDelete($model))
+            $ini .= $this->softDeleteFieldIni();
 
         return $ini;
     }
 
     /**
-     * @param string $init
      * @return string
      * @throws \Error
      */
-    protected function addSoftDeleteField($init)
+    protected function softDeleteFieldIni()
     {
-        $init .= IniBuilder::softDeleteField('__soft_deleted');
-
-        return $init;
+        return IniBuilder::softDeleteField('__soft_deleted');
     }
 
     protected function addSoftDeleteData($models)
@@ -263,7 +260,11 @@ class XunSearchEngine extends Engine
         return $models;
     }
 
-    protected function usesSoftDelete($model)
+    /**
+     * @param $model
+     * @return bool
+     */
+    protected function checkUsesSoftDelete($model)
     {
         return in_array(SoftDeletes::class, class_uses_recursive($model))
              && config('scout.soft_delete', false);

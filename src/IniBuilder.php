@@ -7,7 +7,7 @@ use Taxusorg\XunSearchLaravel\Contracts\XunSearchInterface;
 
 /**
  * @internal
- * @package Taxusorg\XunSearchLaravel
+ * @package \Taxusorg\XunSearchLaravel
  */
 class IniBuilder
 {
@@ -28,6 +28,11 @@ class IniBuilder
         return $str;
     }
 
+    /**
+     * @param string $app_name
+     * @param array $config
+     * @return string
+     */
     public static function header(string $app_name, array $config)
     {
         $str =
@@ -62,7 +67,7 @@ class IniBuilder
     public static function softDeleteField(string $name)
     {
         return static::filed($name, [
-            'type' => XunSearchInterface::XUNSEARCH_TYPE_NUMERIC,
+            'type' => XunSearchInterface::XUNSEARCH_TYPE_DATE,
             'index' => XunSearchInterface::XUNSEARCH_INDEX_SELF,
             'tokenizer' => XunSearchInterface::XUNSEARCH_TOKENIZER_FULL,
         ]);
@@ -88,7 +93,7 @@ class IniBuilder
                 if ($type['type'] == XunSearchInterface::XUNSEARCH_TYPE_ID)
                     throw new \Error("The field '$key' must not be 'id'.
                     Type 'id' has be setting as default in engine.
-                    Set the type as 'numeric' or 'string' in Model->searchableFieldsType(),
+                    Set the type as 'numeric' or 'string' in Model->xunSearchFieldsType(),
                     if you want it to be use in Searchable");
 
                 if ($type['type'] == XunSearchInterface::XUNSEARCH_TYPE_TITLE)
@@ -100,7 +105,7 @@ class IniBuilder
 
             if ($count_title > 1 || $count_body > 1)
                 throw new \Error("'title' or 'body' can only be set once.
-                Fix it in Model->searchableFieldsType()");
+                Fix it in Model->xunSearchFieldsType()");
 
             $str .= static::filed($key, $type);
         }
@@ -141,6 +146,10 @@ class IniBuilder
         return $str;
     }
 
+    /**
+     * @param string $type
+     * @return bool
+     */
     public static function checkType(string $type)
     {
         return in_array($type, [
@@ -153,6 +162,10 @@ class IniBuilder
         ]);
     }
 
+    /**
+     * @param string $index
+     * @return bool
+     */
     public static function checkIndex(string $index)
     {
         return in_array($index, [
@@ -163,6 +176,10 @@ class IniBuilder
         ]);
     }
 
+    /**
+     * @param string $tokenizer
+     * @return bool
+     */
     public static function checkTokenizerWithoutValue(string $tokenizer)
     {
         return in_array($tokenizer, [
@@ -172,12 +189,22 @@ class IniBuilder
         ]);
     }
 
-    public static function checkTokenizerWithValue(string $tokenizer, $value)
+    /**
+     * @param string $tokenizer
+     * @param $value
+     * @return bool
+     */
+    public static function checkTokenizerWithValue(string $tokenizer, $value = null)
     {
         return static::checkTokenizerWithNumeric($tokenizer, $value)
             || static::checkTokenizerWithString($tokenizer, $value);
     }
 
+    /**
+     * @param string $tokenizer
+     * @param null $value
+     * @return bool
+     */
     public static function checkTokenizerWithNumeric(string $tokenizer, $value = null)
     {
         return in_array($tokenizer, [
@@ -187,6 +214,11 @@ class IniBuilder
         ]) && (is_numeric($value) || is_null($value));
     }
 
+    /**
+     * @param string $tokenizer
+     * @param null $value
+     * @return bool
+     */
     public static function checkTokenizerWithString(string $tokenizer, $value = null)
     {
         return $tokenizer == XunSearchInterface::XUNSEARCH_TOKENIZER_SPLIT
