@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 use Taxusorg\XunSearchLaravel\Contracts\XunSearchInterface;
+use Taxusorg\XunSearchLaravel\XunSearchTrait;
 
 class SearchInterfaceModel extends Model implements XunSearchInterface
 {
-    use Searchable;
+    use Searchable, XunSearchTrait;
 
     protected static function boot()
     {
@@ -35,26 +36,12 @@ class SearchInterfaceModel extends Model implements XunSearchInterface
             ],
             'title' => [
                 'type' => self::XUNSEARCH_TYPE_TITLE,
-                'tokenizer' => self::XUNSEARCH_TOKENIZER_SPLIT,
-                'tokenizer_value' => 'a',
             ],
             'subtitle' => [
                 'index' => self::XUNSEARCH_INDEX_BOTH,
             ],
             'content' => [
                 'type' => self::XUNSEARCH_TYPE_BODY,
-            ],
-            'category_id' => [
-                'type' => self::XUNSEARCH_TYPE_NUMERIC,
-                'index' => self::XUNSEARCH_INDEX_SELF
-            ],
-            'created_at' => [
-                'type' => self::XUNSEARCH_TYPE_DATE,
-                'index' => self::XUNSEARCH_INDEX_NONE,
-            ],
-            'updated_at' => [
-                'type' => self::XUNSEARCH_TYPE_DATE,
-                'index' => self::XUNSEARCH_INDEX_NONE,
             ],
         ];
     }

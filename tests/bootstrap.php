@@ -7,16 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\MySqlConnection;
 
 date_default_timezone_set('PRC');
-/*$dotenv = new Dotenv('./');
-$dotenv->load();
+//$dotenv = new Dotenv('./');
+//$dotenv->load();
 
-Model::setConnectionResolver($connection);
-*/
+
 
 $manager = new \Laravel\Scout\EngineManager(null);
 
 $manager->extend('xunsearch', function () {
-    return new \Taxusorg\XunSearchLaravel\Engines\XunSearchEngine();
+    return new \Taxusorg\XunSearchLaravel\Engines\XunSearchEngine(['server_host' => 'localhost']);
 });
 
 function config($key, $default = null) {

@@ -133,12 +133,13 @@ class XunSearchEngine extends Engine
             );
         }
 
-        $search->setFuzzy(boolval($builder->fuzzy))
+        $search->setFuzzy(boolval(isset($builder->fuzzy) && $builder->fuzzy))
             ->setQuery($this->buildQuery($builder));
 
-        $ranges = collect($builder->ranges)->map(function ($value, $key) use ($search, $builder) {
-            $search->addRange($key, $value['from'], $value['to']);
-        });
+        if (isset($builder->ranges))
+            $ranges = collect($builder->ranges)->map(function ($value, $key) use ($search, $builder) {
+                $search->addRange($key, $value['from'], $value['to']);
+            });
 
         return ['docs' => $search->search(), 'total' => $search->getLastCount()];
     }

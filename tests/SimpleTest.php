@@ -11,11 +11,11 @@ class SimpleTest extends TestCase
      */
     public function testSimple()
     {
-        global $manager;
-
-        $builder = SearchInterfaceModel::search('test');
+        $builder = SearchInterfaceModel::search('te')->fuzzy()->range('id',1,200);
 
         $result = $builder->get();
+
+        print_r($result);
 
         $this->assertTrue(true);
     }
