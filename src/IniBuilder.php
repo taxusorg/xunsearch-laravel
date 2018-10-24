@@ -2,7 +2,6 @@
 
 namespace Taxusorg\XunSearchLaravel;
 
-use Illuminate\Database\Eloquent\Model;
 use Taxusorg\XunSearchLaravel\Contracts\XunSearchInterface;
 
 /**
@@ -15,7 +14,7 @@ class IniBuilder
      * @param string $app_name
      * @param string $doc_key_name
      * @param array $config
-     * @param XunSearchInterface|Model $model
+     * @param XunSearchInterface $model
      * @return string
      * @throws \Error
      */

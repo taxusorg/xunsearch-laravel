@@ -14,16 +14,7 @@ class XunSearchServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->publishes([
-            __DIR__.'/../config/xunsearch.php' => config_path('xunsearch.php'),
-        ]);
-        $this->mergeConfigFrom(__DIR__.'/../config/xunsearch.php', 'xunsearch');
-
-        $this->app->extend(EngineManager::class, function (EngineManager $obj, $app) {
-            return $obj->extend('xunsearch', function () use ($app) {
-                return new XunSearchEngine($app->config['xunsearch']);
-            });
-        });
+        //
     }
 
     /**
@@ -33,6 +24,18 @@ class XunSearchServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../config/xunsearch.php' => config_path('xunsearch.php'),
+            ]);
+        }
 
+        $this->mergeConfigFrom(__DIR__.'/../config/xunsearch.php', 'xunsearch');
+
+        $this->app->extend(EngineManager::class, function (EngineManager $obj, $app) {
+            return $obj->extend('xunsearch', function () use ($app) {
+                return new XunSearchEngine($app->config['xunsearch']);
+            });
+        });
     }
 }

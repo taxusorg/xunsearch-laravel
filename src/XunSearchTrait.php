@@ -33,16 +33,10 @@ trait XunSearchTrait
 
     public function registerSearchableFuzzy()
     {
-        Builder::macro('fuzzy', function () {
-            $this->fuzzy = true;
+        Builder::macro('fuzzy', function ($fuzzy = true) {
+            $this->fuzzy = (bool) $fuzzy;
 
             return $this;
         });
-    }
-
-    public static function cleanSearchable()
-    {
-        $self = new static();
-        $self->searchableUsing()->clean($self);
     }
 }

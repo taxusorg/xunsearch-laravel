@@ -78,7 +78,7 @@ class XunSearchEngine extends Engine
      *
      * @param Model $model
      */
-    public function clean(Model $model)
+    public function flush($model)
     {
         $this->getXS($model)->index->clean();
     }
