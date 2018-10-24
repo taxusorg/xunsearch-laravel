@@ -67,7 +67,7 @@ class IniBuilder
     public static function softDeleteField(string $name)
     {
         return static::filed($name, [
-            'type' => XunSearchInterface::XUNSEARCH_TYPE_DATE,
+            'type' => XunSearchInterface::XUNSEARCH_TYPE_NUMERIC,
             'index' => XunSearchInterface::XUNSEARCH_INDEX_SELF,
             'tokenizer' => XunSearchInterface::XUNSEARCH_TOKENIZER_FULL,
         ]);

@@ -137,7 +137,7 @@ class XunSearchEngine extends Engine
             ->setQuery($this->buildQuery($builder));
 
         if (isset($builder->ranges))
-            $ranges = collect($builder->ranges)->map(function ($value, $key) use ($search, $builder) {
+            collect($builder->ranges)->map(function ($value, $key) use ($search) {
                 $search->addRange($key, $value['from'], $value['to']);
             });
 
@@ -148,7 +148,7 @@ class XunSearchEngine extends Engine
     {
         $query = $builder->query;
 
-        $wheres = collect($builder->wheres)->map(function ($value, $key) use (&$query) {
+        collect($builder->wheres)->map(function ($value, $key) use (&$query) {
             $query .= ' ' . $key.':'.$value;
         });
 
@@ -188,7 +188,7 @@ class XunSearchEngine extends Engine
             return $model->getScoutKey();
         });
 
-        return Collection::make($results['docs'])->map(function ($doc) use ($model, $models) {
+        return Collection::make($results['docs'])->map(function ($doc) use ($models) {
             $key = $doc[$this->doc_key_name];
 
             if (isset($models[$key])) {
