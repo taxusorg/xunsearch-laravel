@@ -117,6 +117,11 @@ Blog::search('word')->range('id', 20, 60)->get();
 
 字段的索引 `index` 和分词器 `tokenizer` 的设置效果，在 [XunSearch 官方文档][xun_search_index] 查看。
 
+更新
+--------
+2.1.x
+* `XunSearchTrait` 中移除 `cleanSearchable` 方法，请使用 Scout 中的 `removeAllFromSearch` 方法。
+
 相关链接
 --------
 [laravel/scout][laravel_scout_url]
