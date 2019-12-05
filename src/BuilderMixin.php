@@ -6,7 +6,7 @@ use Laravel\Scout\Builder;
 use Taxusorg\XunSearchLaravel\Engines\XunSearchEngine;
 use XS;
 
-class XunSearchBuilderMixin
+class BuilderMixin
 {
     protected function setFuzzy()
     {
@@ -184,12 +184,51 @@ class XunSearchBuilderMixin
         };
     }
 
-    protected function range()
+    protected function addRange()
     {
         return function ($field, $from, $to) {
             $this->getXunSearchBuilder()->addRange($field, $from, $to);
 
             return $this;
+        };
+    }
+
+    protected function range()
+    {
+        return function ($field, $from, $to) {
+            return $this->addRange($field, $from, $to);
+        };
+    }
+
+    protected function addWeight()
+    {
+        return function ($field, $term, $weight = 1) {
+            $this->getXunSearchBuilder()->addWeight($field, $term, $weight);
+
+            return $this;
+        };
+    }
+
+    protected function weight()
+    {
+        return function ($field, $term, $weight = 1) {
+            return $this->addWeight($field, $term, $weight);
+        };
+    }
+
+    protected function setFacets()
+    {
+        return function ($field, $exact = false) {
+            $this->getXunSearchBuilder()->setFacets($field, $exact);
+
+            return $this;
+        };
+    }
+
+    protected function facets()
+    {
+        return function ($field, $exact = false) {
+            return $this->setFacets($field, $exact);
         };
     }
 
