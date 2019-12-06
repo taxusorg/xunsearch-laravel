@@ -11,7 +11,7 @@ class BuilderMixin
     protected function setFuzzy()
     {
         return function (bool $fuzzy = true) {
-            $this->getXunSearchBuilder()->setFuzzy($fuzzy);
+            $this->xunSearch()->setFuzzy($fuzzy);
 
             return $this;
         };
@@ -27,7 +27,7 @@ class BuilderMixin
     protected function setCutOff()
     {
         return function (int $percent, $weight = 0) {
-            $this->getXunSearchBuilder()->setCutOff($percent, $weight);
+            $this->xunSearch()->setCutOff($percent, $weight);
 
             return $this;
         };
@@ -43,7 +43,7 @@ class BuilderMixin
     protected function setRequireMatchedTerm()
     {
         return function (bool $v) {
-            $this->getXunSearchBuilder()->setRequireMatchedTerm($v);
+            $this->xunSearch()->setRequireMatchedTerm($v);
 
             return $this;
         };
@@ -59,7 +59,7 @@ class BuilderMixin
     protected function setWeightingScheme()
     {
         return function (int $v) {
-            $this->getXunSearchBuilder()->setWeightingScheme($v);
+            $this->xunSearch()->setWeightingScheme($v);
 
             return $this;
         };
@@ -75,7 +75,7 @@ class BuilderMixin
     protected function setAutoSynonyms()
     {
         return function (bool $v) {
-            $this->getXunSearchBuilder()->setAutoSynonyms($v);
+            $this->xunSearch()->setAutoSynonyms($v);
 
             return $this;
         };
@@ -91,7 +91,7 @@ class BuilderMixin
     protected function setSynonymScale()
     {
         return function (float $v) {
-            $this->getXunSearchBuilder()->setSynonymScale($v);
+            $this->xunSearch()->setSynonymScale($v);
 
             return $this;
         };
@@ -107,7 +107,7 @@ class BuilderMixin
     protected function setGeodistSort()
     {
         return function (array $fields, bool $reverse = false, bool $relevance_first = false) {
-            $this->getXunSearchBuilder()->setGeodistSort($fields, $reverse, $relevance_first);
+            $this->xunSearch()->setGeodistSort($fields, $reverse, $relevance_first);
 
             return $this;
         };
@@ -123,7 +123,7 @@ class BuilderMixin
     protected function setMultiSort()
     {
         return function ($fields, $reverse = false, $relevance_first = false) {
-            $this->getXunSearchBuilder()->setMultiSort($fields, $reverse, $relevance_first);
+            $this->xunSearch()->setMultiSort($fields, $reverse, $relevance_first);
 
             return $this;
         };
@@ -139,7 +139,7 @@ class BuilderMixin
     protected function setSort()
     {
         return function ($field, $asc = false, $relevance_first = false) {
-            $this->getXunSearchBuilder()->setSort($field, $asc, $relevance_first);
+            $this->xunSearch()->setSort($field, $asc, $relevance_first);
 
             return $this;
         };
@@ -155,7 +155,7 @@ class BuilderMixin
     protected function setDocOrder()
     {
         return function ($asc = false) {
-            $this->getXunSearchBuilder()->setDocOrder($asc);
+            $this->xunSearch()->setDocOrder($asc);
 
             return $this;
         };
@@ -171,7 +171,7 @@ class BuilderMixin
     protected function setCollapse()
     {
         return function ($field, $num = 1) {
-            $this->getXunSearchBuilder()->setCollapse($field, $num);
+            $this->xunSearch()->setCollapse($field, $num);
 
             return $this;
         };
@@ -187,7 +187,7 @@ class BuilderMixin
     protected function addRange()
     {
         return function ($field, $from, $to) {
-            $this->getXunSearchBuilder()->addRange($field, $from, $to);
+            $this->xunSearch()->addRange($field, $from, $to);
 
             return $this;
         };
@@ -203,7 +203,7 @@ class BuilderMixin
     protected function addWeight()
     {
         return function ($field, $term, $weight = 1) {
-            $this->getXunSearchBuilder()->addWeight($field, $term, $weight);
+            $this->xunSearch()->addWeight($field, $term, $weight);
 
             return $this;
         };
@@ -219,7 +219,7 @@ class BuilderMixin
     protected function setFacets()
     {
         return function ($field, $exact = false) {
-            $this->getXunSearchBuilder()->setFacets($field, $exact);
+            $this->xunSearch()->setFacets($field, $exact);
 
             return $this;
         };
@@ -232,14 +232,21 @@ class BuilderMixin
         };
     }
 
-    protected function getXunSearchBuilder()
+    protected function xunSearch()
     {
         return function () {
-            return $this->getXunSearchServer()->search;
+            return $this->xunSearchServer()->search;
         };
     }
 
-    protected function getXunSearchServer()
+    protected function xunSearchIndex()
+    {
+        return function () {
+            return $this->xunSearchServer()->index;
+        };
+    }
+
+    protected function xunSearchServer()
     {
         return function () {
             $engine = $this->engine();

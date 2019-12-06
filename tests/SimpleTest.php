@@ -14,9 +14,9 @@ class SimpleTest extends TestCase
     public function testSimple()
     {
         $builder = SearchInterfaceModel::search('test')->fuzzy()->range('id',1,200);
-        $xss = $builder->getXunSearchBuilder();
+        $xss = $builder->xunSearch();
         $builder2 = SearchInterfaceModel::search('测试')->range('id', 1, 100);
-        $xss2 = $builder2->getXunSearchBuilder();
+        $xss2 = $builder2->xunSearch();
         $builder3 = SearchInterfaceModel::search('searchable');
 
         $result = $builder->raw();
