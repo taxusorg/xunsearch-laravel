@@ -232,6 +232,20 @@ class BuilderMixin
         };
     }
 
+    protected function getRelatedQuery()
+    {
+        return function ($limit = 6) {
+            return $this->xunSearch()->getRelatedQuery(null, $limit);
+        };
+    }
+
+    protected function getCorrectedQuery()
+    {
+        return function () {
+            return $this->xunSearch()->getCorrectedQuery();
+        };
+    }
+
     protected function xunSearch()
     {
         return function () {

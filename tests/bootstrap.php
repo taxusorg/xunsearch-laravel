@@ -22,6 +22,11 @@ function config($key, $default = null) {
     return $default;
 }
 
+/**
+ * @param $class
+ * @param array $p
+ * @return \Laravel\Scout\EngineManager|\Laravel\Scout\Builder
+ */
 function app($class, array $p = []) {
     global $manager;
 

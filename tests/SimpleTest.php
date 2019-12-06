@@ -23,6 +23,10 @@ class SimpleTest extends TestCase
         $result2 = $builder2->raw();
         $result3 = $builder3->raw();
 
+        $relation = $builder->getRelatedQuery();
+        $relation2 = SearchInterfaceModel::searchableRelatedQuery('test');
+        $hot = SearchInterfaceModel::searchableHotQuery();
+
         $this->assertTrue(true);
     }
 
