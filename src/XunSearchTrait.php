@@ -21,6 +21,31 @@ trait XunSearchTrait
     }
 
     /**
+     * @param string|null $query
+     * @return \XSSearch
+     */
+    public static function xunSearch($query = null)
+    {
+        return static::search()->xunSearch()->setQuery($query);
+    }
+
+    /**
+     * @return \XSIndex
+     */
+    public static function xunSearchIndex()
+    {
+        return static::search()->xunSearchIndex();
+    }
+
+    /**
+     * @return \XS
+     */
+    public static function xunSearchServer()
+    {
+        return static::search()->xunSearchServer();
+    }
+
+    /**
      * @param int $limit
      * @param int $offset
      * @param bool $stemmed
