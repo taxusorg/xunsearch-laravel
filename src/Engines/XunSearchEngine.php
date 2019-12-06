@@ -135,11 +135,6 @@ class XunSearchEngine extends Engine
 
         $search->setQuery($this->buildQuery($builder));
 
-        if (isset($builder->ranges))
-            collect($builder->ranges)->map(function ($value, $key) use ($search) {
-                $search->addRange($key, $value['from'], $value['to']);
-            });
-
         return ['docs' => $search->search(), 'total' => $search->getLastCount()];
     }
 
