@@ -114,7 +114,7 @@ class XunSearchEngine extends Engine
 
     protected function performSearch(Builder $builder, array $options = [])
     {
-        $search = $this->getXS($builder->model)->search;
+        $search = $this->getXSServer($builder)->search;
 
         if (isset($options['hitsPerPage'])) {
             if (isset($options['page']) && $options['page'] > 0) {
@@ -133,8 +133,7 @@ class XunSearchEngine extends Engine
             );
         }
 
-        $search->setFuzzy(boolval(isset($builder->fuzzy) && $builder->fuzzy))
-            ->setQuery($this->buildQuery($builder));
+        $search->setQuery($this->buildQuery($builder));
 
         if (isset($builder->ranges))
             collect($builder->ranges)->map(function ($value, $key) use ($search) {
@@ -211,6 +210,19 @@ class XunSearchEngine extends Engine
     }
 
     /**
+     * @param Builder $builder
+     * @return XunSearch
+     */
+    public function getXSServer(Builder $builder)
+    {
+        if (! isset($builder->xunSearchServer) || ! $builder->xunSearchServer instanceof \XS) {
+            $builder->xunSearchServer = $this->getXS($builder->model);
+        }
+
+        return $builder->xunSearchServer;
+    }
+
+    /**
      * Get Xun Search Object.
      *
      * @param Model $model
@@ -221,8 +233,8 @@ class XunSearchEngine extends Engine
     {
         $app_name = $model->searchableAs();
 
-        if (isset($this->xss[$app_name]))
-            return $this->xss[$app_name];
+//        if (isset($this->xss[$app_name]))
+//            return $this->xss[$app_name];
 
         return $this->xss[$app_name] = new XunSearch($this->buildIni($app_name, $model));
     }

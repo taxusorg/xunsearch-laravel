@@ -22,3 +22,12 @@ function config($key, $default = null) {
     return $default;
 }
 
+function app($class, array $p = []) {
+    global $manager;
+
+    if ($class == \Laravel\Scout\Builder::class)
+        return new $class($p['model'], $p['query'], $p['callback'], $p['softDelete']);
+
+    if ($class == \Laravel\Scout\EngineManager::class)
+        return $manager;
+}

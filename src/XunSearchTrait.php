@@ -12,31 +12,11 @@ trait XunSearchTrait
      */
     public static function bootXunSearchTrait()
     {
-        (new static)->registerXunSearchMacros();
+        (new static)->registerXunSearchBuilderMacros();
     }
 
-    public function registerXunSearchMacros()
+    public function registerXunSearchBuilderMacros()
     {
-        $this->registerSearchableRangeSearch();
-        $this->registerSearchableFuzzy();
-    }
-
-    public function registerSearchableRangeSearch()
-    {
-        Builder::macro('range', function ($word, $from, $to) {
-            $this->ranges[$word]['from'] = $from;
-            $this->ranges[$word]['to'] = $to;
-
-            return $this;
-        });
-    }
-
-    public function registerSearchableFuzzy()
-    {
-        Builder::macro('fuzzy', function ($fuzzy = true) {
-            $this->fuzzy = (bool) $fuzzy;
-
-            return $this;
-        });
+        Builder::mixin(new BuilderMixin());
     }
 }

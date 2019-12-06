@@ -12,6 +12,8 @@ class SearchInterfaceModel extends Model implements XunSearchInterface
 {
     use Searchable, XunSearchTrait;
 
+    protected $fillable = ['title', 'subtitle', 'content'];
+
     protected static function boot()
     {
         parent::boot();
