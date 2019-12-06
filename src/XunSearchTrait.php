@@ -9,13 +9,17 @@ trait XunSearchTrait
      * Boot the trait.
      *
      * @return void
+     * @throws \ReflectionException
      */
     public static function bootXunSearchTrait()
     {
-        (new static)->registerXunSearchBuilderMacros();
+        static::registerXunSearchBuilderMacros();
     }
 
-    public function registerXunSearchBuilderMacros()
+    /**
+     * @throws \ReflectionException
+     */
+    public static function registerXunSearchBuilderMacros()
     {
         Builder::mixin(new BuilderMixin());
     }

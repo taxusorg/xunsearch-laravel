@@ -26,6 +26,7 @@ class SimpleTest extends TestCase
         $relation = $builder->getRelatedQuery();
         $relation2 = SearchInterfaceModel::searchableRelatedQuery('test');
         $hot = SearchInterfaceModel::searchableHotQuery();
+        $cor = SearchInterfaceModel::searchableCorrectedQuery('测');
 
         $this->assertTrue(true);
     }
