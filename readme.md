@@ -12,11 +12,11 @@ laravel/scout 的安装和使用，查看 [laravel/scout 的官方文档][larave
 --------
 
 使用 composer
-```shell
+```shell script
 composer require taxusorg/xunsearch-laravel
 ```
 
-在配置文件中添加服务提供者（Laravel5.5 有自动添加）
+在配置文件中添加服务提供者（Laravel5.5 及以上 有自动添加）
 ```php
 'providers' => [
     //...
@@ -26,7 +26,7 @@ composer require taxusorg/xunsearch-laravel
 ```
 
 复制配置文件到配置目录，配置文件内容不多，而且可以在 `.env` 文件中设置。手动复制或者使用命令复制：
-```shell
+```shell script
 php artisan vendor:publish --provider="Taxusorg\XunSearchLaravel\XunSearchServiceProvider"
 ```
 
@@ -36,20 +36,22 @@ php artisan vendor:publish --provider="Taxusorg\XunSearchLaravel\XunSearchServic
 ```
 
 或者直接在 `.env` 文件中设置
-```
+```dotenv
 SCOUT_DRIVER=xunsearch
 ```
 
 修改 XunSearch 配置文件 `config/xunsearch.php`
 ```php
     'server_host' => env('XUNSEARCH_SERVER_HOST', '127.0.0.1'),
+    'server_index_host' => env('XUNSEARCH_SERVER_INDEX_HOST', null),
     'server_index_port' => env('XUNSEARCH_SERVER_INDEX_PORT', '8383'),
+    'server_search_host' => env('XUNSEARCH_SERVER_SEARCH_HOST', null),
     'server_search_port' => env('XUNSEARCH_SERVER_SEARCH_PORT', '8384'),
     'default_charset' => env('XUNSEARCH_DEFAULT_CHARSET', 'utf-8'),
 ```
 
 或者直接在 `.env` 文件中设置需要修改的内容，没有特殊情况默认即可
-```
+```dotenv
 XUNSEARCH_SERVER_HOST=127.0.0.1
 ```
 
@@ -65,17 +67,19 @@ class Blog extends Model
     use Searchable;
 ```
 
-要使用 XunSearch， `Model` 还要实现指定接口，同时如果有需要，可以使用 `XunSearchTrait` Trait （Trait 中注册了范围检索方法 `range` 和清空所有数据方法 `cleanSearchable`）。
+要使用 XunSearch， `Model` 还要实现指定接口，同时如果有需要，可以使用 `XunSearchTrait` Trait。 
+Trait 中注册了范围检索方法 `range` 等 XunSearch 可用的方法。也可以通过 `xunSearch` 方法获取 `XSSearch` 对象并进行检索设置。
+若不使用 Trait，可以通过 `Model::search()` 方法的回调对 `XSSearch` 设置并检索，对结果自行通过 `XunSearchEngine::map` 方法处理结果或自行对结果进行处理。
 实现接口需要添加 `xunSearchFieldsType` 方法进行字段类型设置
-```
+```php
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
-use Taxusorg\XunSearchLaravel\Contracts\XunSearch as XunSearchContract;
+use Taxusorg\XunSearchLaravel\XunSearchModelInterface;
 use Taxusorg\XunSearchLaravel\XunSearchTrait;
 
-class Blog extends Model implements XunSearchContract
+class Blog extends Model implements XunSearchModelInterface
 {
-    use Searchable， XunSearchTrait;
+    use Searchable, XunSearchTrait;
     
     public function xunSearchFieldsType()
     {
@@ -111,7 +115,7 @@ class Blog extends Model implements XunSearchContract
 `XunSearchTrait` 中给 Scout 的 `Builder` 注册了 `range` 方法进行区间检索。除了 `title` 和 `body` 特殊字段， XunSearch 默认设定字段为 `string`，需要进行区间检索的字段，要设为 `numeric` 或者 `date` 才能正常检索。
 
 例如设定 `id` 字段为 `self::XUNSEARCH_TYPE_NUMERIC`，在 `id` 大于 `20` 小于等于 `60` 的范围内搜索 `word`
-```
+```php
 Blog::search('word')->range('id', 20, 60)->get();
 ```
 
@@ -119,6 +123,10 @@ Blog::search('word')->range('id', 20, 60)->get();
 
 更新
 --------
+3.0.x
+* 修改接口名称和路径
+* 每一个 builder 对应一个 XS 对象，可以通过 Trait 添加的方法获取或者调用 XS 对象的方法
+
 2.1.x
 * `XunSearchTrait` 中移除 `cleanSearchable` 方法，请使用 Scout 中的 `removeAllFromSearch` 方法。
 
