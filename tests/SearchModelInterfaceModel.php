@@ -5,10 +5,10 @@ namespace Tests;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
-use Taxusorg\XunSearchLaravel\Contracts\XunSearchInterface;
+use Taxusorg\XunSearchLaravel\XunSearchModelInterface;
 use Taxusorg\XunSearchLaravel\XunSearchTrait;
 
-class SearchInterfaceModel extends Model implements XunSearchInterface
+class SearchModelInterfaceModel extends Model implements XunSearchModelInterface
 {
     use Searchable, XunSearchTrait;
 

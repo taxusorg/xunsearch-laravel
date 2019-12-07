@@ -2,6 +2,7 @@
 namespace Taxusorg\XunSearchLaravel;
 
 use Laravel\Scout\Builder;
+use Taxusorg\XunSearchLaravel\Libs\BuilderMixin;
 
 trait XunSearchTrait
 {

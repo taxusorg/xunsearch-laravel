@@ -1,10 +1,8 @@
 <?php
 
-namespace Taxusorg\XunSearchLaravel;
+namespace Taxusorg\XunSearchLaravel\Libs;
 
-use Laravel\Scout\Builder;
 use Taxusorg\XunSearchLaravel\Engines\XunSearchEngine;
-use XS;
 
 class BuilderMixin
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Taxusorg\XunSearchLaravel;
+namespace Taxusorg\XunSearchLaravel\Libs;
 
-use Taxusorg\XunSearchLaravel\Contracts\XunSearchInterface;
+use Taxusorg\XunSearchLaravel\XunSearchModelInterface;
 
 /**
  * @internal
@@ -14,11 +14,11 @@ class IniBuilder
      * @param string $app_name
      * @param string $doc_key_name
      * @param array $config
-     * @param XunSearchInterface $model
+     * @param XunSearchModelInterface $model
      * @return string
      * @throws \Error
      */
-    public static function buildIni(string $app_name, string $doc_key_name, XunSearchInterface $model, array $config)
+    public static function buildIni(string $app_name, string $doc_key_name, XunSearchModelInterface $model, array $config)
     {
         $str = static::header($app_name, $config);
         $str .= static::keyField($doc_key_name);
@@ -54,7 +54,7 @@ class IniBuilder
     public static function keyField(string $doc_key_name)
     {
         return static::filed($doc_key_name, [
-            'type' => XunSearchInterface::XUNSEARCH_TYPE_ID,
+            'type' => XunSearchModelInterface::XUNSEARCH_TYPE_ID,
         ]);
     }
 
@@ -66,9 +66,9 @@ class IniBuilder
     public static function softDeleteField(string $name)
     {
         return static::filed($name, [
-            'type' => XunSearchInterface::XUNSEARCH_TYPE_NUMERIC,
-            'index' => XunSearchInterface::XUNSEARCH_INDEX_SELF,
-            'tokenizer' => XunSearchInterface::XUNSEARCH_TOKENIZER_FULL,
+            'type' => XunSearchModelInterface::XUNSEARCH_TYPE_NUMERIC,
+            'index' => XunSearchModelInterface::XUNSEARCH_INDEX_SELF,
+            'tokenizer' => XunSearchModelInterface::XUNSEARCH_TOKENIZER_FULL,
         ]);
     }
 
@@ -89,16 +89,16 @@ class IniBuilder
                 You can change XunSearch doc_key_name in app->config['xunsearch']['doc_key_name']");
 
             if (isset($type['type'])) {
-                if ($type['type'] == XunSearchInterface::XUNSEARCH_TYPE_ID)
+                if ($type['type'] == XunSearchModelInterface::XUNSEARCH_TYPE_ID)
                     throw new \Error("The field '$key' must not be 'id'.
                     Type 'id' has be setting as default in engine.
                     Set the type as 'numeric' or 'string' in Model->xunSearchFieldsType(),
                     if you want it to be use in Searchable");
 
-                if ($type['type'] == XunSearchInterface::XUNSEARCH_TYPE_TITLE)
+                if ($type['type'] == XunSearchModelInterface::XUNSEARCH_TYPE_TITLE)
                     $count_title++;
 
-                elseif ($type['type'] == XunSearchInterface::XUNSEARCH_TYPE_BODY)
+                elseif ($type['type'] == XunSearchModelInterface::XUNSEARCH_TYPE_BODY)
                     $count_body++;
             }
 
@@ -138,7 +138,7 @@ class IniBuilder
                 throw new \Error("The field '$key' has wrong tokenizer or tokenizer_value.");
             }
         } elseif (isset($type['tokenizer_value']) && (int) $type['tokenizer_value'] > 0) {
-            $str .= 'tokenizer = ' .XunSearchInterface::XUNSEARCH_TOKENIZER_SCWS.
+            $str .= 'tokenizer = ' .XunSearchModelInterface::XUNSEARCH_TOKENIZER_SCWS.
                 '('. (int) $type['tokenizer_value'] .')' . PHP_EOL;
         }
 
@@ -152,12 +152,12 @@ class IniBuilder
     public static function checkType(string $type)
     {
         return in_array($type, [
-            XunSearchInterface::XUNSEARCH_TYPE_ID,
-            XunSearchInterface::XUNSEARCH_TYPE_TITLE,
-            XunSearchInterface::XUNSEARCH_TYPE_BODY,
-            XunSearchInterface::XUNSEARCH_TYPE_NUMERIC,
-            XunSearchInterface::XUNSEARCH_TYPE_STRING,
-            XunSearchInterface::XUNSEARCH_TYPE_DATE,
+            XunSearchModelInterface::XUNSEARCH_TYPE_ID,
+            XunSearchModelInterface::XUNSEARCH_TYPE_TITLE,
+            XunSearchModelInterface::XUNSEARCH_TYPE_BODY,
+            XunSearchModelInterface::XUNSEARCH_TYPE_NUMERIC,
+            XunSearchModelInterface::XUNSEARCH_TYPE_STRING,
+            XunSearchModelInterface::XUNSEARCH_TYPE_DATE,
         ]);
     }
 
@@ -168,10 +168,10 @@ class IniBuilder
     public static function checkIndex(string $index)
     {
         return in_array($index, [
-            XunSearchInterface::XUNSEARCH_INDEX_NONE,
-            XunSearchInterface::XUNSEARCH_INDEX_SELF,
-            XunSearchInterface::XUNSEARCH_INDEX_BOTH,
-            XunSearchInterface::XUNSEARCH_INDEX_MIXED,
+            XunSearchModelInterface::XUNSEARCH_INDEX_NONE,
+            XunSearchModelInterface::XUNSEARCH_INDEX_SELF,
+            XunSearchModelInterface::XUNSEARCH_INDEX_BOTH,
+            XunSearchModelInterface::XUNSEARCH_INDEX_MIXED,
         ]);
     }
 
@@ -182,9 +182,9 @@ class IniBuilder
     public static function checkTokenizerWithoutValue(string $tokenizer)
     {
         return in_array($tokenizer, [
-            XunSearchInterface::XUNSEARCH_TOKENIZER_DEFAULT,
-            XunSearchInterface::XUNSEARCH_TOKENIZER_NONE,
-            XunSearchInterface::XUNSEARCH_TOKENIZER_FULL,
+            XunSearchModelInterface::XUNSEARCH_TOKENIZER_DEFAULT,
+            XunSearchModelInterface::XUNSEARCH_TOKENIZER_NONE,
+            XunSearchModelInterface::XUNSEARCH_TOKENIZER_FULL,
         ]);
     }
 
@@ -207,9 +207,9 @@ class IniBuilder
     public static function checkTokenizerWithNumeric(string $tokenizer, $value = null)
     {
         return in_array($tokenizer, [
-            XunSearchInterface::XUNSEARCH_TOKENIZER_XLEN,
-            XunSearchInterface::XUNSEARCH_TOKENIZER_XSTEP,
-            XunSearchInterface::XUNSEARCH_TOKENIZER_SCWS,
+            XunSearchModelInterface::XUNSEARCH_TOKENIZER_XLEN,
+            XunSearchModelInterface::XUNSEARCH_TOKENIZER_XSTEP,
+            XunSearchModelInterface::XUNSEARCH_TOKENIZER_SCWS,
         ]) && (is_numeric($value) || is_null($value));
     }
 
@@ -220,7 +220,7 @@ class IniBuilder
      */
     public static function checkTokenizerWithString(string $tokenizer, $value = null)
     {
-        return $tokenizer == XunSearchInterface::XUNSEARCH_TOKENIZER_SPLIT
+        return $tokenizer == XunSearchModelInterface::XUNSEARCH_TOKENIZER_SPLIT
             && (is_string($value) || is_null($value));
     }
 }

@@ -8,8 +8,8 @@ use Laravel\Scout\Engines\Engine;
 use Laravel\Scout\Builder;
 use XS as XunSearch;
 use XSDocument as XunSearchDocument;
-use Taxusorg\XunSearchLaravel\Contracts\XunSearchInterface;
-use Taxusorg\XunSearchLaravel\IniBuilder;
+use Taxusorg\XunSearchLaravel\XunSearchModelInterface;
+use Taxusorg\XunSearchLaravel\Libs\IniBuilder;
 
 class XunSearchEngine extends Engine
 {
@@ -238,11 +238,11 @@ class XunSearchEngine extends Engine
      * Build ini.
      *
      * @param string $app_name
-     * @param XunSearchInterface|Model $model
+     * @param XunSearchModelInterface|Model $model
      * @return string
      * @throws \Error
      */
-    protected function buildIni(string $app_name, XunSearchInterface $model)
+    protected function buildIni(string $app_name, XunSearchModelInterface $model)
     {
         $ini = IniBuilder::buildIni($app_name, $this->doc_key_name, $model, $this->config);
 

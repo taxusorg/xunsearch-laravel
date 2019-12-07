@@ -4,7 +4,6 @@ namespace Tests;
 
 use Laravel\Scout\Builder;
 use PHPUnit\Framework\TestCase;
-use Taxusorg\XunSearchLaravel\BuilderMixin;
 
 class SimpleTest extends TestCase
 {
@@ -13,27 +12,27 @@ class SimpleTest extends TestCase
      */
     public function testSimple()
     {
-        $builder = SearchInterfaceModel::search('test')->fuzzy()->range('id',1,200);
+        $builder = SearchModelInterfaceModel::search('test')->fuzzy()->range('id',1,200);
         $xss = $builder->xunSearch();
-        $builder2 = SearchInterfaceModel::search('测试')->range('id', 1, 100);
+        $builder2 = SearchModelInterfaceModel::search('测试')->range('id', 1, 100);
         $xss2 = $builder2->xunSearch();
-        $builder3 = SearchInterfaceModel::search('searchable');
+        $builder3 = SearchModelInterfaceModel::search('searchable');
 
         $result = $builder->raw();
         $result2 = $builder2->raw();
         $result3 = $builder3->raw();
 
         $relation = $builder->getRelatedQuery();
-        $relation2 = SearchInterfaceModel::searchableRelatedQuery('test');
-        $hot = SearchInterfaceModel::searchableHotQuery();
-        $cor = SearchInterfaceModel::searchableCorrectedQuery('测');
+        $relation2 = SearchModelInterfaceModel::searchableRelatedQuery('test');
+        $hot = SearchModelInterfaceModel::searchableHotQuery();
+        $cor = SearchModelInterfaceModel::searchableCorrectedQuery('测');
 
         $this->assertTrue(true);
     }
 
     public function testSearchable()
     {
-        $model = new SearchInterfaceModel([
+        $model = new SearchModelInterfaceModel([
             'title' => 'Test Searchable',
             'subtitle' => 'Test Searchable subtitle',
             'content' => 'Content 文本内容 test.'
@@ -44,7 +43,7 @@ class SimpleTest extends TestCase
 
         $model->searchable();
 
-        $model2 = new SearchInterfaceModel([
+        $model2 = new SearchModelInterfaceModel([
             'title' => 'Test Searchable 2',
             'subtitle' => 'Test Searchable subtitle 2',
             'content' => 'Content 测试 test.'
