@@ -14,7 +14,7 @@
     ],
     "require": {
         "php": ">=7.0",
-        "laravel/scout": "^6.0",
+        "laravel/scout": "^6.0|^7.0",
         "hightman/xunsearch": "^1.4"
     },
     "autoload": {
@@ -38,7 +38,7 @@
             ]
         },
         "branch-alias": {
-            "dev-master": "v2.1.x-dev"
+            "dev-master": "v2.2.x-dev"
         }
     }
 }
