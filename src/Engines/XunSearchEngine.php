@@ -259,6 +259,7 @@ class XunSearchEngine extends Engine
      */
     protected function softDeleteFieldIni()
     {
+        // soft delete field named '__soft_deleted'. see \Laravel\Scout\Builder
         return IniBuilder::softDeleteField('__soft_deleted');
     }
 
