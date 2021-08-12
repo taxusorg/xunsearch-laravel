@@ -179,22 +179,15 @@ class XunSearchEngine extends Engine
         }
 
         $keys = collect($results['docs'])->pluck($this->doc_key_name)->values()->all();
+        $objectIdPositions = array_flip($keys);
 
-        $models = $model->getScoutModelsByIds(
+        return $model->getScoutModelsByIds(
             $builder, $keys
-        )->keyBy(function ($model) {
-            return $model->getScoutKey();
-        });
-
-        return Collection::make($results['docs'])->map(function ($doc) use ($models) {
-            $key = $doc[$this->doc_key_name];
-
-            if (isset($models[$key])) {
-                return $models[$key];
-            }
-
-            return false;
-        })->filter()->values();
+        )->filter(function ($model) use ($keys) {
+            return in_array($model->getScoutKey(), $keys);
+        })->sortBy(function ($model) use ($objectIdPositions) {
+            return $objectIdPositions[$model->getScoutKey()];
+        })->values();
     }
 
     /**
