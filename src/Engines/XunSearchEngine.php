@@ -44,17 +44,22 @@ class XunSearchEngine extends Engine
      */
     public function update($models)
     {
+        if ($models->isEmpty()) return;
+
         if ($this->checkUsesSoftDelete($models->first()))
             $models = $this->addSoftDeleteData($models);
 
+        $index = $this->buildXS($models->first())->getIndex();
+        $index->openBuffer();
         foreach ($models as $model) {
             $doc = new XunSearchDocument();
             $doc->setField($this->doc_key_name, $model->getScoutKey());
             $doc->setFields(array_merge(
                 $model->toSearchableArray(), $model->scoutMetadata()
             ));
-            $this->getXS($model)->index->update($doc);
+            $index->update($doc);
         }
+        $index->closeBuffer();
     }
 
     /**
@@ -65,12 +70,13 @@ class XunSearchEngine extends Engine
      */
     public function delete($models)
     {
-        if (!$models->isEmpty())
-            $this->getXS($models->first())->index->del(
-                $models->map(function ($model) {
-                    return $model->getScoutKey();
-                })->values()->all()
-            );
+        if ($models->isEmpty()) return;
+
+        $this->buildXS($models->first())->index->openBuffer()->del(
+            $models->map(function ($model) {
+                return $model->getScoutKey();
+            })->values()->all()
+        )->closeBuffer();
     }
 
     /**
@@ -80,7 +86,7 @@ class XunSearchEngine extends Engine
      */
     public function flush($model)
     {
-        $this->getXS($model)->index->clean();
+        $this->buildXS($model)->index->clean();
     }
 
     /**
@@ -210,8 +216,8 @@ class XunSearchEngine extends Engine
      */
     public function getXSServer(Builder $builder)
     {
-        if (! isset($builder->xunSearchServer) || ! $builder->xunSearchServer instanceof \XS) {
-            $builder->xunSearchServer = $this->getXS($builder->model);
+        if (! isset($builder->xunSearchServer) || ! $builder->xunSearchServer instanceof XunSearch) {
+            $builder->xunSearchServer = $this->buildXS($builder->model);
         }
 
         return $builder->xunSearchServer;
@@ -224,14 +230,9 @@ class XunSearchEngine extends Engine
      * @return XunSearch
      * @throws
      */
-    protected function getXS(Model $model)
+    protected function buildXS(Model $model)
     {
-        $app_name = $model->searchableAs();
-
-//        if (isset($this->xss[$app_name]))
-//            return $this->xss[$app_name];
-
-        return $this->xss[$app_name] = new XunSearch($this->buildIni($app_name, $model));
+        return new XunSearch($this->buildIni($model->searchableAs(), $model));
     }
 
     /**
