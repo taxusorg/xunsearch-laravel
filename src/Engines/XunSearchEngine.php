@@ -24,8 +24,6 @@ class XunSearchEngine extends Engine
 
     protected $doc_key_name = 'xun_search_object_id';
 
-    protected $xss = [];
-
     public function __construct($config = [])
     {
         $this->config = array_merge($this->config, $config);
