@@ -10,10 +10,22 @@ date_default_timezone_set('PRC');
 //$dotenv = new Dotenv('./');
 //$dotenv->load();
 
+class Config
+{
+    function get()
+    {
 
+    }
+}
 
-$manager = new \Laravel\Scout\EngineManager(null);
+class TestContainer extends \Illuminate\Container\Container {}
+$container = new TestContainer();
+\Illuminate\Support\Facades\Facade::setFacadeApplication($container);
+$container->singleton('config', function () {
+    return new Config();
+});
 
+$manager = new \Laravel\Scout\EngineManager($container);
 $manager->extend('xunsearch', function () {
     return new \Taxusorg\XunSearchLaravel\Engines\XunSearchEngine(['server_host' => 'localhost']);
 });
