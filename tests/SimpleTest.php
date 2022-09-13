@@ -13,7 +13,12 @@ class SimpleTest extends TestCase
      */
     public function testSimple()
     {
-        $builder = SearchModelInterfaceModel::search('test')->fuzzy()->range('id',1,200);
+        /**
+         * @var \Taxusorg\XunSearchLaravel\Builder $b;
+         */
+        $builder = SearchModelInterfaceModel::search('test');
+        $builder->where('t', 1)->setFuzzy()->range('id',1,200);
+        $builder->test(1, 't');
         $xss = $builder->xunSearch();
         $builder2 = SearchModelInterfaceModel::search('测试')->range('id', 1, 100);
         $xss2 = $builder2->xunSearch();

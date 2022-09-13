@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Scout\Engines\Engine;
 use Laravel\Scout\Builder;
+use Laravel\Scout\Searchable;
+use Taxusorg\XunSearchLaravel\Exceptions\ConfigError;
+use Taxusorg\XunSearchLaravel\XunSearchModelInterface;
 use XS as XunSearch;
 use XSDocument as XunSearchDocument;
-use Taxusorg\XunSearchLaravel\XunSearchModelInterface;
 use Taxusorg\XunSearchLaravel\Libs\IniBuilder;
+use XSException;
 
 class XunSearchEngine extends Engine
 {
@@ -36,7 +39,7 @@ class XunSearchEngine extends Engine
     /**
      * Update the given model in the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $models
+     * @param Collection $models
      * @return void
      * @throws
      */
@@ -47,11 +50,11 @@ class XunSearchEngine extends Engine
         if ($this->checkUsesSoftDelete($models->first()))
             $models = $this->addSoftDeleteData($models);
 
-        $index = $this->buildXS($models->first())->getIndex();
-        $index->openBuffer();
+        $index = $this->getXS($models->first())->index;
+
         foreach ($models as $model) {
             $doc = new XunSearchDocument();
-            $doc->setField($this->doc_key_name, $model->getScoutKey());
+            $doc->setField($this->getKeyName(), $model->getScoutKey());
             $doc->setFields(array_merge(
                 $model->toSearchableArray(), $model->scoutMetadata()
             ));
@@ -63,7 +66,7 @@ class XunSearchEngine extends Engine
     /**
      * Remove the given model from the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $models
+     * @param Collection $models
      * @return void
      */
     public function delete($models)
@@ -90,8 +93,9 @@ class XunSearchEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param  \Laravel\Scout\Builder  $builder
+     * @param Builder $builder
      * @return mixed
+     * @throws XSException
      */
     public function search(Builder $builder)
     {
@@ -103,10 +107,11 @@ class XunSearchEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param  \Laravel\Scout\Builder  $builder
-     * @param  int  $perPage
-     * @param  int  $page
+     * @param Builder $builder
+     * @param int $perPage
+     * @param int $page
      * @return mixed
+     * @throws XSException
      */
     public function paginate(Builder $builder, $perPage, $page)
     {
@@ -116,6 +121,12 @@ class XunSearchEngine extends Engine
         ]));
     }
 
+    /**
+     * @param Builder $builder
+     * @param array $options
+     * @return array|mixed
+     * @throws XSException
+     */
     protected function performSearch(Builder $builder, array $options = [])
     {
         $search = $this->getXSServer($builder)->search;
@@ -139,7 +150,10 @@ class XunSearchEngine extends Engine
 
         $search->setQuery($this->buildQuery($builder));
 
-        return ['docs' => $search->search(), 'total' => $search->getLastCount()];
+        return [
+            'docs' => $search->search(),
+            'total' => $search->getLastCount(),
+        ];
     }
 
     protected function buildQuery(Builder $builder)
@@ -161,16 +175,16 @@ class XunSearchEngine extends Engine
      */
     public function mapIds($results)
     {
-        return collect($results['docs'])->pluck($this->doc_key_name)->values();
+        return collect($results['docs'])->pluck($this->getKeyName())->values();
     }
 
     /**
      * Map the given results to instances of the given model.
      *
-     * @param  \Laravel\Scout\Builder  $builder
+     * @param Builder $builder
      * @param  mixed  $results
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @param Model|Searchable  $model
+     * @return Collection
      */
     public function map(Builder $builder, $results, $model)
     {
@@ -178,16 +192,26 @@ class XunSearchEngine extends Engine
             return Collection::make();
         }
 
-        $keys = collect($results['docs'])->pluck($this->doc_key_name)->values()->all();
-        $objectIdPositions = array_flip($keys);
+        $keys = collect($results['docs'])->pluck($this->getKeyName())->values()->all();
 
         return $model->getScoutModelsByIds(
             $builder, $keys
-        )->filter(function ($model) use ($keys) {
-            return in_array($model->getScoutKey(), $keys);
-        })->sortBy(function ($model) use ($objectIdPositions) {
-            return $objectIdPositions[$model->getScoutKey()];
-        })->values();
+        )->keyBy(function ($model) {
+            /**
+             * @var Searchable $model
+             */
+            return $model->getScoutKey();
+        });
+
+        return Collection::make($results['docs'])->map(function ($doc) use ($models, $model) {
+            $key = $doc[$this->getKeyName()];
+
+            if (isset($models[$key])) {
+                return $models[$key];
+            }
+
+            return false;
+        })->filter()->values();
     }
 
     /**
@@ -202,13 +226,21 @@ class XunSearchEngine extends Engine
     }
 
     /**
+     * @return mixed|string
+     */
+    public function getKeyName()
+    {
+        return $this->doc_key_name;
+    }
+
+    /**
      * @param Builder $builder
      * @return XunSearch
      */
     public function getXSServer(Builder $builder)
     {
         if (! isset($builder->xunSearchServer) || ! $builder->xunSearchServer instanceof XunSearch) {
-            $builder->xunSearchServer = $this->buildXS($builder->model);
+            $builder->xunSearchServer = $this->getXS($builder->model);
         }
 
         return $builder->xunSearchServer;
@@ -217,9 +249,8 @@ class XunSearchEngine extends Engine
     /**
      * Get Xun Search Object.
      *
-     * @param Model $model
+     * @param Searchable|Model $model
      * @return XunSearch
-     * @throws
      */
     protected function buildXS(Model $model)
     {
@@ -230,13 +261,13 @@ class XunSearchEngine extends Engine
      * Build ini.
      *
      * @param string $app_name
-     * @param XunSearchModelInterface|Model $model
+     * @param XunSearchModelInterface|Model|Searchable $model
      * @return string
-     * @throws \Error
+     * @throws ConfigError
      */
     protected function buildIni(string $app_name, XunSearchModelInterface $model)
     {
-        $ini = IniBuilder::buildIni($app_name, $this->doc_key_name, $model, $this->config);
+        $ini = IniBuilder::buildIni($app_name, $this->getKeyName(), $model, $this->config);
 
         if ($this->checkUsesSoftDelete($model))
             $ini .= $this->softDeleteFieldIni();
@@ -246,7 +277,7 @@ class XunSearchEngine extends Engine
 
     /**
      * @return string
-     * @throws \Error
+     * @throws ConfigError
      */
     protected function softDeleteFieldIni()
     {

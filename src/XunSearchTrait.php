@@ -3,7 +3,13 @@ namespace Taxusorg\XunSearchLaravel;
 
 use Laravel\Scout\Builder;
 use Taxusorg\XunSearchLaravel\Libs\BuilderMixin;
+use XSException;
 
+/**
+ * Trait XunSearchTrait
+ * @method static Builder|BuilderMixin search()
+ * @package Taxusorg\XunSearchLaravel
+ */
 trait XunSearchTrait
 {
     /**
@@ -74,6 +80,7 @@ trait XunSearchTrait
      * @param int $limit
      * @param string|'total'|'lastnum'|'currnum' $type
      * @return array
+     * @throws XSException
      */
     public static function searchableHotQuery($limit = 6, $type = 'total')
     {
@@ -84,6 +91,7 @@ trait XunSearchTrait
      * @param string $query
      * @param int $limit
      * @return array
+     * @throws XSException
      */
     public static function searchableRelatedQuery($query, $limit = 6)
     {
@@ -94,6 +102,7 @@ trait XunSearchTrait
      * @param string $query
      * @param int $limit
      * @return array
+     * @throws XSException
      */
     public static function searchableExpandedQuery($query, $limit = 10)
     {
@@ -103,6 +112,7 @@ trait XunSearchTrait
     /**
      * @param string $query
      * @return array
+     * @throws XSException
      */
     public static function searchableCorrectedQuery($query)
     {
