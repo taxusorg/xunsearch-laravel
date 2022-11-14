@@ -24,7 +24,7 @@ function config($key, $default = null) {
 
 $manager = new \Laravel\Scout\EngineManager($app);
 $manager->extend('xunsearch', function () {
-    return new \Taxusorg\XunSearchLaravel\Engines\XunSearchEngine(['server_host' => 'localhost']);
+    return new \Taxusorg\XunSearchLaravel\Engines\XunSearchEngine(new \Taxusorg\XunSearchLaravel\ClientFactory(['server_host' => 'localhost']));
 });
 $app->instance(\Laravel\Scout\EngineManager::class, $manager);
 
