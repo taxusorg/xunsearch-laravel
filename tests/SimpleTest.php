@@ -2,9 +2,11 @@
 
 namespace Tests;
 
-use Illuminate\Database\Eloquent\Collection;
-use Laravel\Scout\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Builder as BaseBuilder;
 use PHPUnit\Framework\TestCase;
+use Taxusorg\XunSearchLaravel\Builder;
+use Taxusorg\XunSearchLaravel\Client;
 
 class SimpleTest extends TestCase
 {
@@ -13,32 +15,32 @@ class SimpleTest extends TestCase
      */
     public function testSimple()
     {
-        /**
-         * @var \Taxusorg\XunSearchLaravel\Builder $b;
-         */
-        $builder = SearchModelInterfaceModel::search('test');
-        $builder->where('t', 1)->setFuzzy()->range('id',1,200);
-        $builder->test(1, 't');
-        $xss = $builder->xunSearch();
-        $builder2 = SearchModelInterfaceModel::search('测试')->range('id', 1, 100);
-        $xss2 = $builder2->xunSearch();
-        $builder3 = SearchModelInterfaceModel::search('searchable');
+        $XS_1 = SearchModel::search()->getXS();
+        $XS_2 = SearchModel::search()->getXS();
 
-        $result = $builder->raw();
-        $result2 = $builder2->raw();
-        $result3 = $builder3->raw();
+        $this->assertInstanceOf(Client::class, $XS_1);
+        $this->assertInstanceOf(\XSIndex::class, $XS_1->index);
+        $this->assertInstanceOf(\XSSearch::class, $XS_1->search);
+        $this->assertFalse($XS_1 === $XS_2);
+        $this->assertFalse($XS_1->index === $XS_2->index);
+        $this->assertFalse($XS_1->search === $XS_2->search);
 
-        $relation = $builder->getRelatedQuery();
-        $relation2 = SearchModelInterfaceModel::searchableRelatedQuery('test');
-        $hot = SearchModelInterfaceModel::searchableHotQuery();
-        $cor = SearchModelInterfaceModel::searchableCorrectedQuery('测');
+        $resource = $XS_2->index->getSocket();
+        $this->assertIsResource($resource);
+        unset($XS_2);
+//        $gc = gc_collect_cycles();
+        $this->assertFalse(is_resource($resource));
 
-        $this->assertTrue(true);
+        $this->assertInstanceOf(Builder::class, SearchModelWithTrait::search());
+        $this->assertInstanceOf(\XSIndex::class, SearchModelWithTrait::XS()->index);
+
+        $this->assertInstanceOf(BaseBuilder::class, SearchModel::search());
+        $this->assertNotInstanceOf(Builder::class, SearchModel::search());
     }
 
     public function testSearchable()
     {
-        $model = new SearchModelInterfaceModel([
+        $model = new SearchModel([
             'title' => 'Test Searchable',
             'subtitle' => 'Test Searchable subtitle',
             'content' => 'Content 文本内容 test.'
@@ -48,7 +50,7 @@ class SimpleTest extends TestCase
 
         $model->searchable();
 
-        $model2 = new SearchModelInterfaceModel([
+        $model2 = new SearchModel([
             'title' => 'Test Searchable 2',
             'subtitle' => 'Test Searchable subtitle 2',
             'content' => 'Content 测试 test.'
@@ -68,20 +70,34 @@ class SimpleTest extends TestCase
         $this->assertTrue(true);
     }
 
-    /**
-     * @param int $id
-     * @return SearchModelInterfaceModel
-     */
-    protected function buildTestModel(int $id)
+    public function testSearch()
     {
-        $m = new SearchModelInterfaceModel([
-            'title' => 'Test Searchable ' . $id,
-            'subtitle' => 'Test Searchable subtitle ' . $id,
-            'content' => 'Content 测试 test.'
-        ]);
-        $m['id'] = $id;
-        $m->exists = true;
+        $builder = SearchModel::search('test');
+        $this->assertInstanceOf(BaseBuilder::class, $builder);
+        $result1 = $builder->raw();
+        $this->assertIsArray($result1);
 
-        return $m;
+        $builder = SearchModelWithTrait::search('test');
+        $this->assertInstanceOf(Builder::class, $builder);
+        $result2 = $builder->raw();
+        $this->assertIsArray($result2);
+
+        $this->assertEquals($result1, $result2);
+    }
+
+    public function testMethod()
+    {
+        $builder = SearchModelWithTrait::search('test');
+        $builder->setFuzzy(true);
+        $builder->addWeight('title', 'test', 100);
+//        $builder->setCutOff(0, 0);
+        $builder->setRequireMatchedTerm();
+        $builder->setWeightingScheme(0);
+        $builder->setAutoSynonyms();
+        $builder->setSynonymScale(5);
+        $builder->setCollapse('id', 5);
+        $result = $builder->raw();
+
+        $this->assertTrue(true);
     }
 }

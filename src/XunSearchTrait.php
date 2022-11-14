@@ -1,121 +1,135 @@
 <?php
 namespace Taxusorg\XunSearchLaravel;
 
-use Laravel\Scout\Builder;
-use Taxusorg\XunSearchLaravel\Libs\BuilderMixin;
+use Laravel\Scout\Searchable;
+use XS;
+use XSIndex;
+use XSSearch;
 use XSException;
 
 /**
  * Trait XunSearchTrait
- * @method static Builder|BuilderMixin search()
  * @package Taxusorg\XunSearchLaravel
  */
 trait XunSearchTrait
 {
-    /**
-     * Boot the trait.
-     *
-     * @return void
-     * @throws \ReflectionException
-     */
-    public static function bootXunSearchTrait()
-    {
-        static::registerXunSearchBuilderMacros();
-    }
-
-    /**
-     * @throws \ReflectionException
-     */
-    public static function registerXunSearchBuilderMacros()
-    {
-        Builder::mixin(new BuilderMixin());
-    }
+    use Searchable;
 
     /**
      * @param string|null $query
-     * @return \XSSearch
+     * @return XSSearch
      */
-    public static function xunSearch($query = null)
+    public static function XSSearch(?string $query = null): XSSearch
     {
-        return static::search()->xunSearch()->setQuery($query);
+        return static::search()->getXSSearch()->setQuery($query);
     }
 
     /**
-     * @return \XSIndex
+     * @return XSIndex
      */
-    public static function xunSearchIndex()
+    public static function XSIndex(): XSIndex
     {
-        return static::search()->xunSearchIndex();
+        return static::search()->getXSIndex();
     }
 
     /**
-     * @return \XS
+     * @return XS|Client
      */
-    public static function xunSearchServer()
+    public static function XS()
     {
-        return static::search()->xunSearchServer();
+        return static::search()->getXS();
     }
 
     /**
+     * @param string $query
+     * @param null $callback
+     * @return Builder
+     */
+    public static function search($query = '', $callback = null): Builder
+    {
+        return app(Builder::class, [
+            'model' => new static,
+            'query' => $query,
+            'callback' => $callback,
+            'softDelete'=> static::usesSoftDelete() && config('scout.soft_delete', false),
+        ]);
+    }
+
+    /**
+     * 获取当前库内的全部同义词列表
+     * $limit 为 0 则默认为 100
+     *
      * @param int $limit
      * @param int $offset
      * @param bool $stemmed
      * @return array
      */
-    public static function searchableAllSynonyms($limit = 0, $offset = 0, $stemmed = false)
+    public static function searchableAllSynonyms(int $limit = 0, int $offset = 0, bool $stemmed = false): array
     {
-        return static::search()->xunSearch()->getAllSynonyms($limit, $offset, $stemmed);
+        return static::XSSearch()->getAllSynonyms($limit, $offset, $stemmed);
     }
 
     /**
-     * @param $term
-     * @return array
+     * 获取指定词汇的同义词列表
+     *
+     * @param string $term
+     * @return string[]
      */
-    public static function searchableSynonyms($term)
+    public static function searchableSynonyms(string $term): array
     {
-        return static::search()->xunSearch()->getSynonyms($term);
+        return static::XSSearch()->getSynonyms($term);
     }
 
     /**
+     * 获取热门搜索词列表
+     * 最多 50 个
+     *
      * @param int $limit
      * @param string|'total'|'lastnum'|'currnum' $type
-     * @return array
+     * @return string[]
      * @throws XSException
      */
-    public static function searchableHotQuery($limit = 6, $type = 'total')
+    public static function searchableHotQuery(int $limit = 6, string $type = 'total'): array
     {
-        return static::search()->xunSearch()->getHotQuery($limit, $type);
+        return static::XSSearch()->getHotQuery($limit, $type);
     }
 
     /**
+     * 获取相关搜索词列表
+     *
      * @param string $query
      * @param int $limit
-     * @return array
+     * @return string[]
      * @throws XSException
      */
-    public static function searchableRelatedQuery($query, $limit = 6)
+    public static function searchableRelatedQuery(string $query, int $limit = 6): array
     {
-        return static::search()->xunSearch()->getRelatedQuery($query, $limit);
+        return static::XSSearch()->getRelatedQuery($query, $limit);
     }
 
     /**
+     * 获取展开的搜索词列表
+     * 输入前缀，返回补全的搜索词，最多 20 个
+     *
      * @param string $query
      * @param int $limit
-     * @return array
+     * @return string[]
      * @throws XSException
      */
-    public static function searchableExpandedQuery($query, $limit = 10)
+    public static function searchableExpandedQuery(string $query, int $limit = 10): array
     {
-        return static::search()->xunSearch()->getExpandedQuery($query, $limit);
+        return static::XSSearch()->getExpandedQuery($query, $limit);
     }
 
     /**
+     * 获取修正后的搜索词列表
+     *
      * @param string $query
-     * @return array
+     * @return string[]
      * @throws XSException
      */
-    public static function searchableCorrectedQuery($query)
+    public static function searchableCorrectedQuery(string $query): array
     {
-        return static::search()->xunSearch()->getCorrectedQuery($query);
+        return static::XSSearch()->getCorrectedQuery($query);
     }
 }

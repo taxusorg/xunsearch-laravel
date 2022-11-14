@@ -5,18 +5,16 @@ namespace Tests;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
-use Taxusorg\XunSearchLaravel\FieldType;
 use Taxusorg\XunSearchLaravel\XunSearchModelInterface;
-use Taxusorg\XunSearchLaravel\XunSearchTrait;
 
 /**
  * Class SearchModelInterfaceModel
  * @method static \Taxusorg\XunSearchLaravel\Builder search($query = '', $callback = null)
  * @package Tests
  */
-class SearchModelInterfaceModel extends Model implements XunSearchModelInterface
+class SearchModel extends Model implements XunSearchModelInterface
 {
-    use Searchable, XunSearchTrait;
+    use Searchable;
 
     protected $fillable = ['title', 'subtitle', 'content'];
 
