@@ -8,7 +8,7 @@ use Taxusorg\XunSearchLaravel\Builder;
 use Tests\Src\SearchModel;
 use Tests\Src\SearchModelWithTrait;
 
-class SimpleTest extends TestCase
+class DataTest extends TestCase
 {
     public function testSearchable()
     {
@@ -31,13 +31,6 @@ class SimpleTest extends TestCase
         $model2->exists = true;
 
         $model2->searchable();
-
-        $collection = new Collection();
-        $collection->add($this->buildTestModel(3));
-        $collection->add($this->buildTestModel(4));
-        $collection->add($this->buildTestModel(5));
-
-        $collection->searchable();
 
         $this->assertTrue(true);
     }

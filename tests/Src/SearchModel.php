@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tests\Src;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -25,13 +25,6 @@ class SearchModel extends Model implements XunSearchModelInterface
         static::addGlobalScope('test_scope', function(Builder $builder) {
             $builder->where('age', '>', 200);
         });
-    }
-
-    public function searchableUsing()
-    {
-        global $manager;
-
-        return $manager->driver('xunsearch');
     }
 
     public function xunSearchFieldsType()
