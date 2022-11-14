@@ -13,7 +13,7 @@ use XSSearch;
  */
 class BaseBuilderMixin
 {
-    public function getXSTotal()
+    public function getXSTotal(): Closure
     {
         return function () {
             return $this->getXSSearch()->getDbTotal();
