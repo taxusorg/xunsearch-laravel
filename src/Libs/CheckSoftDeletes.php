@@ -19,7 +19,7 @@ trait CheckSoftDeletes
      */
     protected function checkUsesSoftDelete($model): bool
     {
-        return in_array(SoftDeletes::class, class_uses_recursive($model))
+        return $model::usesSoftDelete()
             && config('scout.soft_delete', false);
     }
 }
