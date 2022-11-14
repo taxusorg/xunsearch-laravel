@@ -1,7 +1,6 @@
 <?php
 namespace Taxusorg\XunSearchLaravel\Engines;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Scout\Engines\Engine;
@@ -10,12 +9,15 @@ use Laravel\Scout\Searchable;
 use Taxusorg\XunSearchLaravel\Builder as XSBuilder;
 use Taxusorg\XunSearchLaravel\Client;
 use Taxusorg\XunSearchLaravel\ClientFactory;
+use Taxusorg\XunSearchLaravel\Libs\CheckSoftDeletes;
 use XSSearch;
 use XSDocument as XunSearchDocument;
 use XSException;
 
 class XunSearchEngine extends Engine
 {
+    use CheckSoftDeletes;
+
     protected $clientFactory;
 
     public function __construct(ClientFactory $clientFactory)
@@ -274,23 +276,6 @@ class XunSearchEngine extends Engine
      */
     public function buildClient(Model $model): Client
     {
-        return $this->clientFactory->buildClient($model, $this->checkUsesSoftDelete($model));
-    }
-
-    protected function addSoftDeleteData($models)
-    {
-        $models->each->pushSoftDeleteMetadata();
-
-        return $models;
-    }
-
-    /**
-     * @param $model
-     * @return bool
-     */
-    protected function checkUsesSoftDelete($model): bool
-    {
-        return in_array(SoftDeletes::class, class_uses_recursive($model))
-             && config('scout.soft_delete', false);
+        return $this->clientFactory->buildClient($model);
     }
 }

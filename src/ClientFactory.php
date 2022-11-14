@@ -3,14 +3,16 @@
 namespace Taxusorg\XunSearchLaravel;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 use Taxusorg\XunSearchLaravel\Exceptions\ConfigError;
 use Taxusorg\XunSearchLaravel\Libs\IniBuilder;
+use Taxusorg\XunSearchLaravel\Libs\CheckSoftDeletes;
 use XS as XunSearch;
 
 class ClientFactory
 {
+    use CheckSoftDeletes;
+
     protected $config = [
         'server_host' => 'localhost',
         'server_index_host' => null,
@@ -41,20 +43,19 @@ class ClientFactory
 
     /**
      * @param XunSearchModelInterface|Searchable|Model $model
-     * @param bool $soft_delete
      * @return Client
      */
-    public function buildClient(XunSearchModelInterface $model, bool $soft_delete = false): Client
+    public function buildClient(XunSearchModelInterface $model): Client
     {
-        return new Client($this->buildXS($model, $soft_delete));
+        return new Client($this->buildXS($model));
     }
 
     /**
      * @param Searchable|Model $model
      */
-    protected function buildXS(Model $model, bool $soft_delete): XunSearch
+    protected function buildXS(Model $model): XunSearch
     {
-        return new XunSearch($this->buildIni($model->searchableAs(), $model, $soft_delete));
+        return new XunSearch($this->buildIni($model->searchableAs(), $model));
     }
 
     /**
@@ -62,14 +63,13 @@ class ClientFactory
      *
      * @param string $app_name
      * @param XunSearchModelInterface|Searchable|Model $model
-     * @param bool $soft_delete
      * @return string
      */
-    protected function buildIni(string $app_name, XunSearchModelInterface $model, bool $soft_delete): string
+    protected function buildIni(string $app_name, XunSearchModelInterface $model): string
     {
         $ini = IniBuilder::buildIni($app_name, $this->getKeyName(), $model, $this->config);
 
-        if ($soft_delete)
+        if ($this->checkUsesSoftDelete($model))
             $ini .= $this->softDeleteFieldIni();
 
         return $ini;
