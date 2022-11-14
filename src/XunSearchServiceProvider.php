@@ -1,7 +1,6 @@
 <?php
 namespace Taxusorg\XunSearchLaravel;
 
-use Taxusorg\XunSearchLaravel\Engines\XunSearchEngine;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Scout\EngineManager;
 

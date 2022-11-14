@@ -1,5 +1,5 @@
 <?php
-namespace Taxusorg\XunSearchLaravel\Engines;
+namespace Taxusorg\XunSearchLaravel;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
@@ -7,8 +7,6 @@ use Laravel\Scout\Engines\Engine;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Searchable;
 use Taxusorg\XunSearchLaravel\Builder as XSBuilder;
-use Taxusorg\XunSearchLaravel\Client;
-use Taxusorg\XunSearchLaravel\ClientFactory;
 use Taxusorg\XunSearchLaravel\Libs\CheckSoftDeletes;
 use XSSearch;
 use XSDocument as XunSearchDocument;

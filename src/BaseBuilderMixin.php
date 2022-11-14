@@ -3,7 +3,6 @@
 namespace Taxusorg\XunSearchLaravel;
 
 use Closure;
-use Taxusorg\XunSearchLaravel\Engines\XunSearchEngine;
 use XS;
 use XSIndex;
 use XSSearch;
