@@ -4,7 +4,7 @@ use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Laravel\Scout\Builder;
 use Laravel\Scout\EngineManager;
-use Taxusorg\XunSearchLaravel\BaseBuilderMixin;
+use Taxusorg\XunSearchLaravel\Libs\BaseBuilderMixin;
 use Taxusorg\XunSearchLaravel\ClientFactory;
 use Taxusorg\XunSearchLaravel\XunSearchEngine;
 

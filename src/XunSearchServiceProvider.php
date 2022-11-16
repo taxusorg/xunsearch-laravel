@@ -3,6 +3,7 @@ namespace Taxusorg\XunSearchLaravel;
 
 use Illuminate\Support\ServiceProvider;
 use Laravel\Scout\EngineManager;
+use Taxusorg\XunSearchLaravel\Libs\BaseBuilderMixin;
 
 class XunSearchServiceProvider extends ServiceProvider
 {

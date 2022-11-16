@@ -1,14 +1,17 @@
 <?php
 
-namespace Taxusorg\XunSearchLaravel;
+namespace Taxusorg\XunSearchLaravel\Libs;
 
 use Closure;
+use Laravel\Scout\Builder;
+use Taxusorg\XunSearchLaravel\Client;
+use Taxusorg\XunSearchLaravel\XunSearchEngine;
 use XS;
 use XSIndex;
 use XSSearch;
 
 /**
- * @mixin \Laravel\Scout\Builder
+ * @mixin Builder
  */
 class BaseBuilderMixin
 {
