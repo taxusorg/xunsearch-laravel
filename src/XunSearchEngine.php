@@ -38,6 +38,7 @@ class XunSearchEngine extends Engine
             $models = $this->addSoftDeleteData($models);
 
         $index = $this->buildClient($models->first())->index;
+        $index->openBuffer();
 
         foreach ($models as $model) {
             $doc = new XunSearchDocument();
@@ -47,6 +48,7 @@ class XunSearchEngine extends Engine
             ));
             $index->update($doc);
         }
+
         $index->closeBuffer();
     }
 
