@@ -2,7 +2,7 @@
     "name": "taxusorg/xunsearch-laravel",
     "description": "Laravel XunSearch engine.",
     "keywords": [
-        "xunsearch", "XunSearch Engine", "Laravel Scout engine", "Laravel"
+        "xunsearch", "scout", "Laravel"
     ],
     "type": "library",
     "license": "MIT",
