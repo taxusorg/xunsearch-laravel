@@ -11,12 +11,15 @@ class XunSearchServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      *
      * @return void
+     * @throws
      */
     public function boot()
     {
-        $this->app->extend(EngineManager::class, function (EngineManager $obj, $app) {
-            return $obj->extend('xunsearch', function () use ($app) {
-                return new XunSearchEngine($app->config['xunsearch']);
+        \Laravel\Scout\Builder::mixin(new BaseBuilderMixin());
+
+        $this->app->extend(EngineManager::class, function (EngineManager $obj) {
+            return $obj->extend('xunsearch', function () {
+                return new XunSearchEngine($this->app['config']['xunsearch']);
             });
         });
     }
@@ -30,12 +33,10 @@ class XunSearchServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/xunsearch.php' => config_path('xunsearch.php'),
-            ]);
+                __DIR__ . '/../config/xunsearch.php' => $this->app->configPath('xunsearch.php'),
+            ], 'config');
         }
 
         $this->mergeConfigFrom(__DIR__.'/../config/xunsearch.php', 'xunsearch');
-
-        \Laravel\Scout\Builder::mixin(new BaseBuilderMixin());
     }
 }
