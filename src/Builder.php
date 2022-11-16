@@ -12,6 +12,7 @@ use XSSearch;
  * @method XSIndex getXSIndex
  * @method XSSearch getXSSearch
  * @method int getXSTotal
+ * @method Results raw
  */
 class Builder extends BaseBuilder
 {

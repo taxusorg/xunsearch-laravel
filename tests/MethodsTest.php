@@ -40,6 +40,9 @@ class MethodsTest extends TestCase
         });
 
         $this->searchMock = $xsSearch;
+
+        $this->searchMock->method('search')->willReturn([]);
+        $this->searchMock->method('getLastCount')->willReturn(0);
     }
 
     public function tearDown()

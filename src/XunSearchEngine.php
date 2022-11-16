@@ -80,10 +80,10 @@ class XunSearchEngine extends Engine
      * Perform the given search on the engine.
      *
      * @param Builder|XSBuilder $builder
-     * @return mixed
+     * @return Results
      * @throws XSException
      */
-    public function search(Builder $builder)
+    public function search(Builder $builder): Results
     {
         return $this->performSearch($builder, array_filter([
             'hitsPerPage' => $builder->limit,
@@ -96,10 +96,10 @@ class XunSearchEngine extends Engine
      * @param Builder|XSBuilder $builder
      * @param int $perPage
      * @param int $page
-     * @return mixed
+     * @return Results
      * @throws XSException
      */
-    public function paginate(Builder $builder, $perPage, $page)
+    public function paginate(Builder $builder, $perPage, $page): Results
     {
         return $this->performSearch($builder, array_filter([
             'hitsPerPage' => $perPage,
@@ -110,10 +110,10 @@ class XunSearchEngine extends Engine
     /**
      * @param Builder|XSBuilder $builder
      * @param array $options
-     * @return array|mixed
+     * @return Results
      * @throws XSException
      */
-    protected function performSearch(Builder $builder, array $options = [])
+    protected function performSearch(Builder $builder, array $options = []): Results
     {
         $search = $builder->getXSSearch();
 
@@ -137,10 +137,10 @@ class XunSearchEngine extends Engine
         $this->setSearchParams($builder, $search);
         $search->setQuery($this->buildQuery($builder));
 
-        return [
-            'docs' => $search->search(),
-            'total' => $search->getLastCount(),
-        ];
+        $docs = $search->search();
+        $total = $search->getLastCount();
+
+        return new Results($this, $builder, $total, $docs);
     }
 
     /**
@@ -205,7 +205,7 @@ class XunSearchEngine extends Engine
     /**
      * Pluck and return the primary keys of the given results.
      *
-     * @param  mixed  $results
+     * @param Results $results
      * @return \Illuminate\Support\Collection
      */
     public function mapIds($results): \Illuminate\Support\Collection
@@ -217,8 +217,8 @@ class XunSearchEngine extends Engine
      * Map the given results to instances of the given model.
      *
      * @param Builder $builder
-     * @param  mixed  $results
-     * @param Model|Searchable  $model
+     * @param Results $results
+     * @param Model|Searchable $model
      * @return Collection
      */
     public function map(Builder $builder, $results, $model): Collection

@@ -2,9 +2,11 @@
 
 namespace Tests;
 
+use Illuminate\Database\Eloquent\Collection;
 use Laravel\Scout\Builder as BaseBuilder;
 use PHPUnit\Framework\TestCase;
 use Taxusorg\XunSearchLaravel\Builder;
+use Taxusorg\XunSearchLaravel\Results;
 use Tests\Src\SearchModel;
 use Tests\Src\SearchModelWithTrait;
 
@@ -40,13 +42,41 @@ class DataTest extends TestCase
         $builder = SearchModel::search('test');
         $this->assertInstanceOf(BaseBuilder::class, $builder);
         $result1 = $builder->raw();
-        $this->assertIsArray($result1);
+        $this->assertInstanceOf(Results::class, $result1);
+
+        $this->assertIsInt($result1['total']);
+        $this->assertEquals($result1['total'], $result1->getTotal());
 
         $builder = SearchModelWithTrait::search('test');
         $this->assertInstanceOf(Builder::class, $builder);
         $result2 = $builder->raw();
-        $this->assertIsArray($result2);
+        $this->assertInstanceOf(Results::class, $result2);
 
-        $this->assertEquals($result1, $result2);
+        $this->assertEquals($result1['docs'], $result2['docs']);
+        $this->assertEquals($result1['total'], $result2['total']);
+    }
+
+    public function testMapModels()
+    {
+        $builder = SearchModel::search('test');
+        $result = $builder->raw();
+        $ids = $result->getIds();
+        $models = $ids->map(function ($id) {
+            $model = new SearchModel();
+            $model['id'] = $id;
+            $model->exists = true;
+            return $model;
+        })->all();
+
+        $modelMock = $this->createMock(SearchModel::class);
+        $builder->model = $modelMock;
+
+        $modelMock
+            ->expects($this->once())
+            ->method('getScoutModelsByIds')
+            ->withConsecutive([$builder, $ids->all()])
+            ->willReturn(new Collection($models));
+
+        $this->assertEquals($models, $result->getModels()->all());
     }
 }
