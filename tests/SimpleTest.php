@@ -5,55 +5,34 @@ namespace Tests;
 use Laravel\Scout\Builder as BaseBuilder;
 use PHPUnit\Framework\TestCase;
 use Taxusorg\XunSearchLaravel\Builder;
+use Taxusorg\XunSearchLaravel\Client;
 use Tests\Src\SearchModel;
 use Tests\Src\SearchModelWithTrait;
 
 class SimpleTest extends TestCase
 {
-    public function testSearchable()
+    public function testSimple()
     {
-        $model = new SearchModel([
-            'title' => 'Test Searchable',
-            'subtitle' => 'Test Searchable subtitle',
-            'content' => 'Content 文本内容 test.'
-        ]);
-        $model['id'] = 1;
-        $model->exists = true;
+        $XS_1 = SearchModel::search()->getXS();
+        $XS_2 = SearchModel::search()->getXS();
 
-        $model->searchable();
+        $this->assertInstanceOf(Client::class, $XS_1);
+        $this->assertInstanceOf(\XSIndex::class, $XS_1->index);
+        $this->assertInstanceOf(\XSSearch::class, $XS_1->search);
+        $this->assertFalse($XS_1 === $XS_2);
+        $this->assertFalse($XS_1->index === $XS_2->index);
+        $this->assertFalse($XS_1->search === $XS_2->search);
 
-        $model2 = new SearchModel([
-            'title' => 'Test Searchable 2',
-            'subtitle' => 'Test Searchable subtitle 2',
-            'content' => 'Content 测试 test.'
-        ]);
-        $model2['id'] = 2;
-        $model2->exists = true;
+        $resource = $XS_2->index->getSocket();
+        $this->assertIsResource($resource);
+        unset($XS_2);
+//        $gc = gc_collect_cycles();
+        $this->assertFalse(is_resource($resource));
 
-        $model2->searchable();
+        $this->assertInstanceOf(Builder::class, SearchModelWithTrait::search());
+        $this->assertInstanceOf(\XSIndex::class, SearchModelWithTrait::XS()->index);
 
-        $collection = new Collection();
-        $collection->add($this->buildTestModel(3));
-        $collection->add($this->buildTestModel(4));
-        $collection->add($this->buildTestModel(5));
-
-        $collection->searchable();
-
-        $this->assertTrue(true);
-    }
-
-    public function testSearch()
-    {
-        $builder = SearchModel::search('test');
-        $this->assertInstanceOf(BaseBuilder::class, $builder);
-        $result1 = $builder->raw();
-        $this->assertIsArray($result1);
-
-        $builder = SearchModelWithTrait::search('test');
-        $this->assertInstanceOf(Builder::class, $builder);
-        $result2 = $builder->raw();
-        $this->assertIsArray($result2);
-
-        $this->assertEquals($result1, $result2);
+        $this->assertInstanceOf(BaseBuilder::class, SearchModel::search());
+        $this->assertNotInstanceOf(Builder::class, SearchModel::search());
     }
 }
