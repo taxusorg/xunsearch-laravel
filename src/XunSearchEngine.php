@@ -180,6 +180,14 @@ class XunSearchEngine extends Engine
                     $builder->multi_sort['relevance_first']
                 );
             }
+        } else {
+            if (count($builder->orders) == 1) {
+                $search->setSort($builder->orders[0]['column'], $builder->orders[0]['direction'] == 'asc');
+            } else {
+                $search->setMultiSort(array_map(function ($item) {
+                    return [$item['column'], $item['direction'] == 'asc'];
+                }, $builder->orders));
+            }
         }
 
         isset($builder->range) && is_array($builder->range) &&

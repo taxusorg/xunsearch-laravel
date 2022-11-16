@@ -114,7 +114,7 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * 设置多字段组合排序方式
+     * 设置多字段组合排序方式。该方法会覆盖 orderBy 方法
      * 当您需要根据多个字段的值按不同的方式综合排序时, 请使用这项
      *
      * @param bool[]|string[]|string $fields 序依据的字段数组, 以字段名称为键, true/false 为值表示正序或逆序
