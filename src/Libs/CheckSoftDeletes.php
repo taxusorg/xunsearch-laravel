@@ -2,7 +2,8 @@
 
 namespace Taxusorg\XunSearchLaravel\Libs;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 trait CheckSoftDeletes
 {
@@ -14,7 +15,7 @@ trait CheckSoftDeletes
     }
 
     /**
-     * @param $model
+     * @param Searchable|Model $model
      * @return bool
      */
     protected function checkUsesSoftDelete($model): bool
