@@ -70,6 +70,7 @@ class DataTest extends TestCase
 
         $modelMock = $this->createMock(SearchModel::class);
         $builder->model = $modelMock;
+        $result->setBuilder($builder);
 
         $modelMock
             ->expects($this->once())

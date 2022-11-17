@@ -142,7 +142,9 @@ class XunSearchEngine extends Engine
         $docs = $search->search();
         $total = $search->getLastCount();
 
-        return new Results($this, $builder, $total, $docs);
+        return new Results($this, tap(clone $builder, function ($builder) {
+            unset($builder->XSClient);
+        }), $total, $docs);
     }
 
     /**

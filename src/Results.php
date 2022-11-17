@@ -35,6 +35,11 @@ class Results implements IteratorAggregate, ArrayAccess
         $this->docs = $docs;
     }
 
+    public function setBuilder(Builder $builder)
+    {
+        $this->builder = $builder;
+    }
+
     /**
      * @return \Illuminate\Support\Collection
      */
