@@ -228,6 +228,7 @@ Builder 拓展的方法
 | XS | 获取 Client 对象 |
 | XSSearch | 获取 XSSearch 对象 |
 | XSIndex | 获取 XSIndex 对象 |
+| XSTotal | 获取该库中的总文档数 |
 | search | 返回 Builder 对象 |
 | searchableAllSynonyms | 获取当前库内的全部同义词列表 |
 | searchableSynonyms | 获取指定词汇的同义词列表 |

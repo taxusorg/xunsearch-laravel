@@ -41,6 +41,14 @@ trait XunSearchTrait
     }
 
     /**
+     * @return int
+     */
+    public static function XSTotal(): int
+    {
+        return static::search()->getXSTotal();
+    }
+
+    /**
      * @param string $query
      * @param null $callback
      * @return Builder
