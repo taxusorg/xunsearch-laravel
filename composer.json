@@ -14,7 +14,7 @@
     ],
     "require": {
         "php": ">=7.1|>=8.0",
-        "laravel/scout": "^6.0|^7.0",
+        "laravel/scout": "^5.0|^6.0|^7.0|^8.0|^9.0",
         "hightman/xunsearch": "^1.4"
     },
     "autoload": {
