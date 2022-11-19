@@ -2,6 +2,7 @@
 
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\Facade;
 use Laravel\Scout\Builder;
 use Laravel\Scout\EngineManager;
 use Taxusorg\XunSearchLaravel\Libs\BaseBuilderMixin;
@@ -11,6 +12,8 @@ use Taxusorg\XunSearchLaravel\XunSearchEngine;
 include_once __DIR__ . '/../../vendor/autoload.php';
 
 date_default_timezone_set('PRC');
+$app = \Tests\Src\Application::getInstance();
+Facade::setFacadeApplication($app);
 
 /**
  * @param $class
@@ -24,15 +27,14 @@ function app($class = null, array $p = []) {
 
     return $app->make($class, $p);
 }
-$app = Container::getInstance();
 
 function config($key, $default = null) {
     return app('config')[$key] ?? $default;
 }
 $app->singleton('config', function () {
-    return [
-        'scout.driver' => 'xunsearch'
-    ];
+    $config = new Illuminate\Config\Repository();
+    $config->set('scout.driver', 'xunsearch');
+    return $config;
 });
 
 function registerEngine() {

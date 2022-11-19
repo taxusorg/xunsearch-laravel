@@ -24,7 +24,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^7.0",
-        "vlucas/phpdotenv": "^2.5"
+        "vlucas/phpdotenv": "^2.5",
+        "illuminate/config": "*"
     },
     "autoload-dev": {
         "psr-4": {
