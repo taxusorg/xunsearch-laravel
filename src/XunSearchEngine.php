@@ -241,7 +241,7 @@ class XunSearchEngine extends Engine
 
         $keys = collect($results['docs'])->pluck($this->getKeyName())->values()->all();
 
-        return $model->getScoutModelsByIds(
+        $models = $model->getScoutModelsByIds(
             $builder, $keys
         )->keyBy(function ($model) {
             /**
