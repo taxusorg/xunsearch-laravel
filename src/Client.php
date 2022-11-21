@@ -29,6 +29,11 @@ class Client
         $this->xs->__destruct();
     }
 
+    public function getXS(): XS
+    {
+        return $this->xs;
+    }
+
     public function __call($name, $arguments)
     {
         return $this->xs->{$name}($arguments);
