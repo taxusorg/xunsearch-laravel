@@ -1,6 +1,6 @@
 {
     "name": "taxusorg/xunsearch-laravel",
-    "description": "Laravel XunSearch engine.",
+    "description": "XunSearch engine for laravel/scout.",
     "keywords": [
         "xunsearch", "scout", "Laravel"
     ],
@@ -39,7 +39,7 @@
             ]
         },
         "branch-alias": {
-            "dev-master": "v4.0.x-dev"
+            "dev-master": "v4.1.x-dev"
         }
     }
 }
