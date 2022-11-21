@@ -2,8 +2,10 @@
 
 namespace Tests;
 
+use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Scout\Builder as BaseBuilder;
+use Laravel\Scout\EngineManager;
 use PHPUnit\Framework\TestCase;
 use Taxusorg\XunSearchLaravel\Builder;
 use Taxusorg\XunSearchLaravel\Results;
@@ -72,12 +74,31 @@ class DataTest extends TestCase
         $builder->model = $modelMock;
         $result->setBuilder($builder);
 
-        $modelMock
-            ->expects($this->once())
-            ->method('getScoutModelsByIds')
-            ->withConsecutive([$builder, $ids->all()])
-            ->willReturn(new Collection($models));
+        if (count($models)) {
+            $modelMock
+                ->expects($this->once())
+                ->method('getScoutModelsByIds')
+                ->withConsecutive([$builder, $ids->all()])
+                ->willReturn(new Collection($models));
+        } else {
+            $modelMock
+                ->expects($this->once())
+                ->method('newCollection')
+                ->withConsecutive([])
+                ->willReturn(new Collection());
+        }
 
         $this->assertEquals($models, $result->getModels()->all());
+    }
+
+    public function testClean()
+    {
+        /**
+         * @var EngineManager $manager
+         */
+        $manager = Container::getInstance()->make(EngineManager::class);
+        $engine = $manager->engine();
+
+        $this->assertTrue($engine->deleteIndex((new SearchModel())->searchableAs()));
     }
 }

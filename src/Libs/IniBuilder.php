@@ -15,15 +15,16 @@ class IniBuilder
     /**
      * @param string $app_name
      * @param string $doc_key_name
-     * @param XunSearchModelInterface $model
+     * @param XunSearchModelInterface|null $model
      * @param array $config
      * @return string
      */
-    public static function buildIni(string $app_name, string $doc_key_name, XunSearchModelInterface $model, array $config)
+    public static function buildIni(string $app_name, string $doc_key_name, array $config, ?XunSearchModelInterface $model)
     {
         $str = static::header($app_name, $config);
         $str .= static::keyField($doc_key_name);
-        $str .= static::fields($model->xunSearchFieldsType(), $doc_key_name);
+        if ($model)
+            $str .= static::fields($model->xunSearchFieldsType(), $doc_key_name);
 
         return $str;
     }

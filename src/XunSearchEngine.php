@@ -1,8 +1,10 @@
 <?php
 namespace Taxusorg\XunSearchLaravel;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\LazyCollection;
 use Laravel\Scout\Engines\Engine;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Searchable;
@@ -236,29 +238,43 @@ class XunSearchEngine extends Engine
     public function map(Builder $builder, $results, $model): Collection
     {
         if (count($results['docs']) === 0) {
-            return Collection::make();
+            return $model->newCollection();
         }
 
-        $keys = collect($results['docs'])->pluck($this->getKeyName())->values()->all();
+        $keys = $this->mapIds($results)->all();
+        $keyPositions = array_flip($keys);
 
-        $models = $model->getScoutModelsByIds(
+        return $model->getScoutModelsByIds(
             $builder, $keys
-        )->keyBy(function ($model) {
-            /**
-             * @var Searchable $model
-             */
-            return $model->getScoutKey();
-        });
+        )->filter(function ($model) use ($keys) {
+            return in_array($model->getScoutKey(), $keys);
+        })->sortBy(function ($model) use ($keyPositions) {
+            return $keyPositions[$model->getScoutKey()];
+        })->values();
+    }
 
-        return Collection::make($results['docs'])->map(function ($doc) use ($models, $model) {
-            $key = $doc[$this->getKeyName()];
+    /**
+     * @param Builder $builder
+     * @param Results $results
+     * @param Model|Searchable $model
+     * @return LazyCollection
+     */
+    public function lazyMap(Builder $builder, $results, $model): LazyCollection
+    {
+        if (count($results['docs']) === 0) {
+            return LazyCollection::make($model->newCollection());
+        }
 
-            if (isset($models[$key])) {
-                return $models[$key];
-            }
+        $keys = $this->mapIds($results)->all();
+        $keyPositions = array_flip($keys);
 
-            return false;
-        })->filter()->values();
+        return $model->queryScoutModelsByIds(
+            $builder, $keys
+        )->cursor()->filter(function ($model) use ($keys) {
+            return in_array($model->getScoutKey(), $keys);
+        })->sortBy(function ($model) use ($keyPositions) {
+            return $keyPositions[$model->getScoutKey()];
+        })->values();
     }
 
     /**
@@ -270,6 +286,23 @@ class XunSearchEngine extends Engine
     public function getTotalCount($results): int
     {
         return $results['total'];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function createIndex($name, array $options = [])
+    {
+        throw new Exception('XunSearch indexes are created automatically upon adding objects.');
+    }
+
+    public function deleteIndex($name): bool
+    {
+        $client = $this->clientFactory->buildClientWithoutModel($name);
+
+        $client->index->clean();
+
+        return true;
     }
 
     /**

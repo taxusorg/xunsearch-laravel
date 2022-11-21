@@ -47,29 +47,32 @@ class ClientFactory
      */
     public function buildClient(XunSearchModelInterface $model): Client
     {
-        return new Client($this->buildXS($model));
+        return new Client($this->buildIni($model->searchableAs(), $model));
     }
 
     /**
-     * @param Searchable|Model $model
+     * 不使用 model 构建的 client 缺少 fields 内容，用于清空等操作
+     *
+     * @param string $app_name
+     * @return Client
      */
-    protected function buildXS(Model $model): XunSearch
+    public function buildClientWithoutModel(string $app_name): Client
     {
-        return new XunSearch($this->buildIni($model->searchableAs(), $model));
+        return new Client($this->buildIni($app_name, null));
     }
 
     /**
      * Build ini.
      *
      * @param string $app_name
-     * @param XunSearchModelInterface|Searchable|Model $model
+     * @param XunSearchModelInterface|Searchable|Model|null $model
      * @return string
      */
-    protected function buildIni(string $app_name, XunSearchModelInterface $model): string
+    protected function buildIni(string $app_name, ?XunSearchModelInterface $model): string
     {
-        $ini = IniBuilder::buildIni($app_name, $this->getKeyName(), $model, $this->config);
+        $ini = IniBuilder::buildIni($app_name, $this->getKeyName(), $this->config, $model);
 
-        if ($this->checkUsesSoftDelete($model))
+        if ($model && $this->checkUsesSoftDelete($model))
             $ini .= $this->softDeleteFieldIni();
 
         return $ini;
