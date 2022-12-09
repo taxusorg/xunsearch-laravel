@@ -129,6 +129,9 @@ class XunSearchEngine extends Engine
             }
         }
 
+        $this->setSearchParams($builder, $search);
+        $search->setQuery($this->buildQuery($builder));
+
         if ($builder->callback) {
             return call_user_func(
                 $builder->callback,
@@ -137,9 +140,6 @@ class XunSearchEngine extends Engine
                 $options
             );
         }
-
-        $this->setSearchParams($builder, $search);
-        $search->setQuery($this->buildQuery($builder));
 
         $docs = $search->search();
         $total = $search->getLastCount();
