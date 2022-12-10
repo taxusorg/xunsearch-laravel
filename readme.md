@@ -240,6 +240,9 @@ Builder 拓展的方法
 更新
 --------
 
+4.1.x
+* 支持 Scout:9.*
+
 4.0.x
 * raw 方法返回 Results 对象
 * 拓展 Builder
