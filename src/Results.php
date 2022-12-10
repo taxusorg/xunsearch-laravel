@@ -7,11 +7,9 @@ use ArrayIterator;
 use Closure;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use IteratorAggregate;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
-use Traversable;
 use XSDocument;
 
 class Results implements IteratorAggregate, ArrayAccess

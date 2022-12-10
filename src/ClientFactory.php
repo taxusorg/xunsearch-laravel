@@ -7,7 +7,6 @@ use Laravel\Scout\Searchable;
 use Taxusorg\XunSearchLaravel\Exceptions\ConfigError;
 use Taxusorg\XunSearchLaravel\Libs\IniBuilder;
 use Taxusorg\XunSearchLaravel\Libs\CheckSoftDeletes;
-use XS as XunSearch;
 
 class ClientFactory
 {
