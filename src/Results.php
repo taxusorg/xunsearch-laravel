@@ -6,13 +6,14 @@ use ArrayAccess;
 use ArrayIterator;
 use Closure;
 use Exception;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection;
 use IteratorAggregate;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
 use XSDocument;
 
-class Results implements IteratorAggregate, ArrayAccess
+class Results implements IteratorAggregate, ArrayAccess, Arrayable
 {
     protected $engine;
     protected $builder;
@@ -72,7 +73,7 @@ class Results implements IteratorAggregate, ArrayAccess
         return $this->total;
     }
 
-    public function getArray(): array
+    public function toArray(): array
     {
         return $this->docs;
     }
