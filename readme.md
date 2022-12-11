@@ -102,7 +102,17 @@ class Blog extends Model implements XunSearchModelInterface
 }
 ```
 
+每个字段可以设置 `字段类型`、`索引类型`和`分词器`。设置关键词已经在接口中定义常量，前缀分别为：
+
+| 设置类型 | 前缀 |
+| --- | --- |
+| 字段类型 | XUNSEARCH_TYPE_ |
+| 索引类型 | XUNSEARCH_INDEX_ |
+| 分词器 | XUNSEARCH_TOKENIZER_ |
+
 设置的字段类型的具体效果，查看 [XunSearch 官方文档][xun_search_index]。
+
+设置了分词器包含有参数时，通过设置 `tokenizer_value` 设置分词器参数。如果没有指定分词器，但设置了大于 `0` 的参数，则自动设置分词器为 `XUNSEARCH_TOKENIZER_SCWS`。都不设置则使用 XunSearch 默认分词器。
 
 `Model` 的主键，例如 `id`，已被默认设为引擎的文档主键。
 如果需要对 id 进行区间检索，把 id 的类型设为 `self::XUNSEARCH_TYPE_NUMERIC`。如果不需要对 `id` 进行检索，可以不添加 `id` 字段。
@@ -167,7 +177,7 @@ Results 对象的方法
 | getIds | 获取检索结果的主键集合 |
 | getModels | 获取检索结果的 Model 集合 |
 | getTotal | 获取检索的总数 |
-| getArray | 获取检索结果的 XSDocument 数组 |
+| toArray | 获取检索结果的 XSDocument 数组 |
 
 拓展查询
 ------
@@ -218,11 +228,6 @@ Builder 拓展的方法
 
 `XunSearchTrait` 中包含一些静态方法，可以获取 Client 对象等。
 
-注意：
-通过静态方法获取 Client 对象时，同等于通过 search 获取 Builder 对象，再通过 Builder::getXS 获取 Client。
-获取到 Client 后，Builder 对象已经被丢弃。所以该 Client 不属于任何 Builder。
-可以通过该方法获取 XS 对象进行与 Model、Scout 等无关的原始操作。
-
 | 方法 | 描述 |
 |---|---|
 | XS | 获取 Client 对象 |
@@ -237,8 +242,15 @@ Builder 拓展的方法
 | searchableExpandedQuery | 获取展开的搜索词列表 |
 | searchableCorrectedQuery | 获取修正后的搜索词列表 |
 
+注意：
+通过静态方法获取 Client 对象时，同等于通过 `search` 方法获取 Builder 对象，再通过 `Builder::getXS` 获取 Client。
+获取到 Client 后，Builder 对象已经被丢弃。所以该 Client 不属于任何 Builder。
+可以通过该方法获取 `XS` 对象进行与 Model、Scout 等无关的原始操作。
+
 更新
 --------
+4.2.x
+* Results 实现 Arrayable 接口， 方法 getArray 换成 toArray
 
 4.1.x
 * 支持 Scout:9.*
@@ -247,7 +259,7 @@ Builder 拓展的方法
 * raw 方法返回 Results 对象
 * 拓展 Builder
 * 重写 search 方法，引入 `XunSearchTrait` 时不必引入 `Searchable`
-* 增加 Client 对象
+* 增加 Client 类，包装 XS 对象。当 Client 被解构时解构 XS 对象
 
 3.0.x
 * 修改接口名称和路径
