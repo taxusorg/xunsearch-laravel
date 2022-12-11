@@ -79,6 +79,14 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
     }
 
     /**
+     * @deprecated use toArray
+     */
+    public function getArray(): array
+    {
+        return $this->docs;
+    }
+
+    /**
      * @return ArrayIterator<XSDocument>
      */
     public function getIterator(): ArrayIterator
