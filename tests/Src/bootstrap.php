@@ -5,14 +5,17 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Facade;
 use Laravel\Scout\Builder;
 use Laravel\Scout\EngineManager;
+use Laravel\Scout\ScoutServiceProvider;
 use Taxusorg\XunSearchLaravel\Libs\BaseBuilderMixin;
 use Taxusorg\XunSearchLaravel\ClientFactory;
 use Taxusorg\XunSearchLaravel\XunSearchEngine;
+use Taxusorg\XunSearchLaravel\XunSearchServiceProvider;
+use Tests\Src\Application;
 
 include_once __DIR__ . '/../../vendor/autoload.php';
 
 date_default_timezone_set('PRC');
-$app = \Tests\Src\Application::getInstance();
+$app = Application::getInstance();
 Facade::setFacadeApplication($app);
 
 /**
@@ -38,18 +41,15 @@ $app->singleton('config', function () {
 });
 
 function registerEngine() {
-    $app = Container::getInstance();
+    $app = Application::getInstance();
 
-    $app->singleton(EngineManager::class, function ($app) {
-        return new EngineManager($app);
+    tap(new ScoutServiceProvider($app), function (ScoutServiceProvider $provider) {
+        $provider->register();
+        $provider->boot();;
     });
-
-    $app->extend(EngineManager::class, function (EngineManager $manager) {
-        return $manager->extend('xunsearch', function () {
-            return new XunSearchEngine(new ClientFactory());
-        });
+    tap(new XunSearchServiceProvider($app), function (XunSearchServiceProvider $provider) {
+        $provider->register();
+        $provider->boot();;
     });
 }
 registerEngine();
-
-Builder::mixin(new BaseBuilderMixin());
