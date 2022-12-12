@@ -19,7 +19,7 @@ class XunSearchServiceProvider extends ServiceProvider
 
         $this->app->extend(EngineManager::class, function (EngineManager $obj) {
             return $obj->extend('xunsearch', function () {
-                return new XunSearchEngine($this->app['config']['xunsearch']);
+                return new XunSearchEngine(new ClientFactory($this->app['config']['xunsearch']));
             });
         });
     }
