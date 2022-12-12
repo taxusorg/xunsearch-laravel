@@ -2,7 +2,8 @@
 
 namespace Tests;
 
-use Illuminate\Container\Container;
+use Illuminate\Config\Repository;
+use Illuminate\Foundation\Application;
 use Laravel\Scout\EngineManager;
 use PHPUnit\Framework\TestCase;
 use Taxusorg\XunSearchLaravel\Client;
@@ -15,6 +16,8 @@ use XSSearch;
 class MethodsTest extends TestCase
 {
     public $searchMock;
+
+    protected $engine_bak;
 
     public function setUp()
     {
@@ -29,14 +32,27 @@ class MethodsTest extends TestCase
         $xsSub->method('getSearch')->willReturn($xsSearch);
         $xsSub->method('__get')->willReturn($xsSearch);
 
-        $app = Container::getInstance();
-        $app->singleton(EngineManager::class, function ($app) {
-            return new EngineManager($app);
-        });
-        $app->extend(EngineManager::class, function (EngineManager $manager) use ($factorySub) {
-            return $manager->extend('xunsearch', function () use ($factorySub) {
+        $app = Application::getInstance();
+
+        $app->make(EngineManager::class);
+        $app->extend(EngineManager::class, function (EngineManager $manager) use ($factorySub, $app) {
+            if (method_exists(EngineManager::class, 'forgetDrivers')) {
+                $manager->forgetDrivers('xunsearch_mock');
+            } else {
+                $this->engine_bak = $manager;
+
+                return (new EngineManager($app))->extend('xunsearch_mock', function () use ($factorySub) {
+                    return new XunSearchEngine($factorySub);
+                });
+            }
+
+            return $manager->extend('xunsearch_mock', function () use ($factorySub) {
                 return new XunSearchEngine($factorySub);
             });
+        });
+
+        tap($app->make("config"), function (Repository $repository) {
+            $repository->set('scout.driver', 'xunsearch_mock');
         });
 
         $this->searchMock = $xsSearch;
@@ -47,7 +63,19 @@ class MethodsTest extends TestCase
 
     public function tearDown()
     {
-        registerEngine();
+        $app = Application::getInstance();
+
+        $app->extend(EngineManager::class, function (EngineManager $manager) use ($app) {
+            if (method_exists(EngineManager::class, 'forgetDrivers')) {
+                return $manager;
+            }
+
+            return $this->engine_bak;
+        });
+
+        tap($app->make("config"), function (Repository $repository) {
+            $repository->set('scout.driver', 'xunsearch');
+        });
 
         parent::tearDown();
     }
