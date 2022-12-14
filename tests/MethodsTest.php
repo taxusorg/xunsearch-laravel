@@ -34,19 +34,17 @@ class MethodsTest extends TestCase
 
         $app = Application::getInstance();
 
-        $app->make(EngineManager::class);
+        $this->engine_bak = $app->make(EngineManager::class);
         $app->extend(EngineManager::class, function (EngineManager $manager) use ($factorySub, $app) {
             if (method_exists(EngineManager::class, 'forgetDrivers')) {
                 $manager->forgetDrivers('xunsearch_mock');
-            } else {
-                $this->engine_bak = $manager;
 
-                return (new EngineManager($app))->extend('xunsearch_mock', function () use ($factorySub) {
+                return $manager->extend('xunsearch_mock', function () use ($factorySub) {
                     return new XunSearchEngine($factorySub);
                 });
             }
 
-            return $manager->extend('xunsearch_mock', function () use ($factorySub) {
+            return (new EngineManager($app))->extend('xunsearch_mock', function () use ($factorySub) {
                 return new XunSearchEngine($factorySub);
             });
         });
@@ -66,10 +64,6 @@ class MethodsTest extends TestCase
         $app = Application::getInstance();
 
         $app->extend(EngineManager::class, function (EngineManager $manager) use ($app) {
-            if (method_exists(EngineManager::class, 'forgetDrivers')) {
-                return $manager;
-            }
-
             return $this->engine_bak;
         });
 
