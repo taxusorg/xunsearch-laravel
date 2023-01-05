@@ -205,7 +205,7 @@ class XunSearchEngine extends Engine
         });
     }
 
-    protected function buildQuery(Builder $builder): string
+    protected function buildQuery(Builder $builder): ?string
     {
         $query = $builder->query;
 

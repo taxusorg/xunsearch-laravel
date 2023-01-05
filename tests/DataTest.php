@@ -56,6 +56,10 @@ class DataTest extends TestCase
 
         $this->assertEquals($result1['docs'], $result2['docs']);
         $this->assertEquals($result1['total'], $result2['total']);
+
+        $builder = SearchModel::search(null);
+        $result3 = $builder->raw();
+        $this->assertInstanceOf(Results::class, $result3);
     }
 
     public function testMapModels()
