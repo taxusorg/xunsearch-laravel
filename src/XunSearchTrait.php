@@ -72,9 +72,21 @@ trait XunSearchTrait
      * @param bool $stemmed
      * @return array
      */
-    public static function searchableAllSynonyms(int $limit = 0, int $offset = 0, bool $stemmed = false): array
+    public static function XSAllSynonyms(int $limit = 0, int $offset = 0, bool $stemmed = false): array
     {
         return static::XSSearch()->getAllSynonyms($limit, $offset, $stemmed);
+    }
+
+    /**
+     * @param int $limit
+     * @param int $offset
+     * @param bool $stemmed
+     * @return array
+     * @deprecated 使用 XSAllSynonyms 代替
+     */
+    public static function searchableAllSynonyms(int $limit = 0, int $offset = 0, bool $stemmed = false): array
+    {
+        return static::XSAllSynonyms($limit, $offset, $stemmed);
     }
 
     /**
@@ -83,9 +95,19 @@ trait XunSearchTrait
      * @param string $term
      * @return string[]
      */
-    public static function searchableSynonyms(string $term): array
+    public static function XSSynonyms(string $term): array
     {
         return static::XSSearch()->getSynonyms($term);
+    }
+
+    /**
+     * @param string $term
+     * @return string[]
+     * @deprecated 使用 XSSynonyms 代替
+     */
+    public static function searchableSynonyms(string $term): array
+    {
+        return static::XSSynonyms($term);
     }
 
     /**
@@ -97,9 +119,21 @@ trait XunSearchTrait
      * @return string[]
      * @throws XSException
      */
-    public static function searchableHotQuery(int $limit = 6, string $type = 'total'): array
+    public static function XSHotQuery(int $limit = 6, string $type = 'total'): array
     {
         return static::XSSearch()->getHotQuery($limit, $type);
+    }
+
+    /**
+     * @param int $limit
+     * @param string|'total'|'lastnum'|'currnum' $type
+     * @return string[]
+     * @throws XSException
+     * @deprecated 使用 XSHotQuery 代替
+     */
+    public static function searchableHotQuery(int $limit = 6, string $type = 'total'): array
+    {
+        return static::XSHotQuery($limit, $type);
     }
 
     /**
@@ -110,9 +144,21 @@ trait XunSearchTrait
      * @return string[]
      * @throws XSException
      */
-    public static function searchableRelatedQuery(string $query, int $limit = 6): array
+    public static function XSRelatedQuery(string $query, int $limit = 6): array
     {
         return static::XSSearch()->getRelatedQuery($query, $limit);
+    }
+
+    /**
+     * @param string $query
+     * @param int $limit
+     * @return string[]
+     * @throws XSException
+     * @deprecated 使用 XSRelatedQuery 代替
+     */
+    public static function searchableRelatedQuery(string $query, int $limit = 6): array
+    {
+        return static::XSRelatedQuery($query, $limit);
     }
 
     /**
@@ -124,9 +170,21 @@ trait XunSearchTrait
      * @return string[]
      * @throws XSException
      */
-    public static function searchableExpandedQuery(string $query, int $limit = 10): array
+    public static function XSExpandedQuery(string $query, int $limit = 10): array
     {
         return static::XSSearch()->getExpandedQuery($query, $limit);
+    }
+
+    /**
+     * @param string $query
+     * @param int $limit
+     * @return string[]
+     * @throws XSException
+     * @deprecated 使用 XSExpandedQuery 代替
+     */
+    public static function searchableExpandedQuery(string $query, int $limit = 10): array
+    {
+        return static::XSExpandedQuery($query, $limit);
     }
 
     /**
@@ -136,8 +194,21 @@ trait XunSearchTrait
      * @return string[]
      * @throws XSException
      */
-    public static function searchableCorrectedQuery(string $query): array
+    public static function XSCorrectedQuery(string $query): array
     {
         return static::XSSearch()->getCorrectedQuery($query);
+    }
+
+    /**
+     * 获取修正后的搜索词列表
+     *
+     * @param string $query
+     * @return string[]
+     * @throws XSException
+     * @deprecated 使用 XSCorrectedQuery 代替
+     */
+    public static function searchableCorrectedQuery(string $query): array
+    {
+        return static::XSCorrectedQuery($query);
     }
 }
