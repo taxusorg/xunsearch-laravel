@@ -278,6 +278,8 @@ Builder 拓展的方法
 
 [XunSearch 文档][xun_search_index]
 
+<img referrerpolicy="no-referrer-when-downgrade" src="https://matomo.fairycat.cn/matomo.php?idsite=2&amp;rec=1&amp;action_name=packagist" style="border:0" alt="" />
+
 [laravel_scout_url]: https://github.com/laravel/scout
 [laravel_scout_doc]: https://laravel.com/docs/master/scout
 [xun_search_sdk_url]: https://github.com/hightman/xs-sdk-php
