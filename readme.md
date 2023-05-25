@@ -235,12 +235,12 @@ Builder 拓展的方法
 | XSIndex | 获取 XSIndex 对象 |
 | XSTotal | 获取该库中的总文档数 |
 | search | 返回 Builder 对象 |
-| searchableAllSynonyms | 获取当前库内的全部同义词列表 |
-| searchableSynonyms | 获取指定词汇的同义词列表 |
-| searchableHotQuery | 获取热门搜索词列表 |
-| searchableRelatedQuery | 获取相关搜索词列表 |
-| searchableExpandedQuery | 获取展开的搜索词列表 |
-| searchableCorrectedQuery | 获取修正后的搜索词列表 |
+| XSAllSynonyms | 获取当前库内的全部同义词列表 |
+| XSSynonyms | 获取指定词汇的同义词列表 |
+| XSHotQuery | 获取热门搜索词列表 |
+| XSRelatedQuery | 获取相关搜索词列表 |
+| XSExpandedQuery | 获取展开的搜索词列表 |
+| XSCorrectedQuery | 获取修正后的搜索词列表 |
 
 注意：
 通过静态方法获取 Client 对象时，同等于通过 `search` 方法获取 Builder 对象，再通过 `Builder::getXS` 获取 Client。
