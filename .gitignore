@@ -46,9 +46,16 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+# PHPUnit
+/.phpunit.result.cache
+
 # PhpStorm
 # =========================
 /.idea/
+
+# VS Code
+# =========================
+/.vscode/
 
 # Composer
 # =========================
