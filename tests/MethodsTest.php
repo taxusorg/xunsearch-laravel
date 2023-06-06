@@ -2,76 +2,29 @@
 
 namespace Tests;
 
-use Illuminate\Config\Repository;
-use Illuminate\Foundation\Application;
-use Laravel\Scout\EngineManager;
 use PHPUnit\Framework\TestCase;
-use Taxusorg\XunSearchLaravel\Client;
-use Taxusorg\XunSearchLaravel\ClientFactory;
-use Taxusorg\XunSearchLaravel\XunSearchEngine;
 use Tests\Src\SearchModelWithTrait;
-use XS;
-use XSSearch;
 
 class MethodsTest extends TestCase
 {
-    public $searchMock;
+    use WithApplication;
 
-    protected $engine_bak;
-
-    public function setUp()
+    /**
+     * @throws
+     */
+    public function setUp(): void
     {
         parent::setUp();
 
-        $factorySub = $this->createMock(ClientFactory::class);
-        $xsSub = $this->createMock(XS::class);
-        $xsSearch = $this->createMock(XSSearch::class);
-        $client = new Client($xsSub);
-
-        $factorySub->method('buildClient')->willReturn($client);
-        $xsSub->method('getSearch')->willReturn($xsSearch);
-        $xsSub->method('__get')->willReturn($xsSearch);
-
-        $app = Application::getInstance();
-
-        $this->engine_bak = $app->make(EngineManager::class);
-        $app->extend(EngineManager::class, function (EngineManager $manager) use ($factorySub, $app) {
-            if (method_exists(EngineManager::class, 'forgetDrivers')) {
-                $manager->forgetDrivers('xunsearch_mock');
-
-                return $manager->extend('xunsearch_mock', function () use ($factorySub) {
-                    return new XunSearchEngine($factorySub);
-                });
-            }
-
-            return (new EngineManager($app))->extend('xunsearch_mock', function () use ($factorySub) {
-                return new XunSearchEngine($factorySub);
-            });
-        });
-
-        tap($app->make("config"), function (Repository $repository) {
-            $repository->set('scout.driver', 'xunsearch_mock');
-        });
-
-        $this->searchMock = $xsSearch;
-
-        $this->searchMock->method('search')->willReturn([]);
-        $this->searchMock->method('getLastCount')->willReturn(0);
-    }
-
-    public function tearDown()
-    {
-        $app = Application::getInstance();
-
-        $app->extend(EngineManager::class, function (EngineManager $manager) use ($app) {
-            return $this->engine_bak;
-        });
-
-        tap($app->make("config"), function (Repository $repository) {
-            $repository->set('scout.driver', 'xunsearch');
-        });
-
-        parent::tearDown();
+        $this->bootApplication();
+        $this->searchMock
+            ->expects(self::once())
+            ->method('search')
+            ->willReturn([]);
+        $this->searchMock
+            ->expects(self::once())
+            ->method('getLastCount')
+            ->willReturn(0);
     }
 
     public function testSetFuzzy()
@@ -79,7 +32,7 @@ class MethodsTest extends TestCase
         $this->searchMock
             ->expects($this->once())
             ->method('setFuzzy')
-            ->withConsecutive([true]);
+            ->with(true);
 
         SearchModelWithTrait::search('test')
             ->setFuzzy(false)
@@ -90,12 +43,12 @@ class MethodsTest extends TestCase
     public function testSetCutOff()
     {
         $num1 = rand(0, 100);
-        $num2 = rand(0.1, 25.5);
+        $num2 = rand(1, 255) / 10;
 
         $this->searchMock
             ->expects($this->once())
             ->method('setCutOff')
-            ->withConsecutive([$num1, $num2]);
+            ->with($num1, $num2);
 
         SearchModelWithTrait::search('test')
             ->setCutOff(-1, -1)
@@ -108,11 +61,11 @@ class MethodsTest extends TestCase
         $this->searchMock
             ->expects($this->once())
             ->method('setRequireMatchedTerm')
-            ->withConsecutive([true]);
+            ->with(true);
 
         SearchModelWithTrait::search('test')
             ->setRequireMatchedTerm(false)
-            ->setRequireMatchedTerm(true)
+            ->setRequireMatchedTerm()
             ->raw();
     }
 
@@ -123,7 +76,7 @@ class MethodsTest extends TestCase
         $this->searchMock
             ->expects($this->once())
             ->method('setWeightingScheme')
-            ->withConsecutive([$int]);
+            ->with($int);
 
         SearchModelWithTrait::search('test')
             ->setWeightingScheme(-1)
@@ -136,7 +89,7 @@ class MethodsTest extends TestCase
         $this->searchMock
             ->expects($this->once())
             ->method('setAutoSynonyms')
-            ->withConsecutive([true]);
+            ->with(true);
 
         SearchModelWithTrait::search('test')
             ->setAutoSynonyms(false)
@@ -146,12 +99,12 @@ class MethodsTest extends TestCase
 
     public function testSetSynonymScale()
     {
-        $float = rand(0.01, 2.55);
+        $float = rand(1, 255) / 100;
 
         $this->searchMock
             ->expects($this->once())
             ->method('setSynonymScale')
-            ->withConsecutive([$float]);
+            ->with($float);
 
         SearchModelWithTrait::search('test')
             ->setSynonymScale(-1)
@@ -177,11 +130,11 @@ class MethodsTest extends TestCase
         $this->searchMock
             ->expects($this->once())
             ->method('setDocOrder')
-            ->withConsecutive([false]);
+            ->with(false);
 
         SearchModelWithTrait::search('test')
             ->setDocOrder(true)
-            ->setDocOrder(false)
+            ->setDocOrder()
             ->raw();
     }
 
@@ -190,7 +143,7 @@ class MethodsTest extends TestCase
         $this->searchMock
             ->expects($this->once())
             ->method('setCollapse')
-            ->withConsecutive(['id', 10]);
+            ->with('id', 10);
 
         SearchModelWithTrait::search('test')
             ->setCollapse('-', 0)
@@ -240,7 +193,7 @@ class MethodsTest extends TestCase
         $this->searchMock
             ->expects($this->once())
             ->method('setScwsMulti')
-            ->withConsecutive([$int]);
+            ->with($int);
 
         SearchModelWithTrait::search('test')
             ->setScwsMulti(-1)

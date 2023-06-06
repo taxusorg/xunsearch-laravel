@@ -1,0 +1,49 @@
+services:
+  "7.2":
+    build: ./tests/docker/7.2/
+    volumes:
+      - './config:/var/www/html/config'
+      - './src:/var/www/html/src'
+      - './tests:/var/www/html/tests'
+      - './tests/docker/7.2/phpunit.xml:/var/www/html/phpunit.xml'
+    entrypoint: php ./vendor/phpunit/phpunit/phpunit --configuration ./phpunit.xml
+  "7.3":
+    build: ./tests/docker/7.3/
+    volumes:
+      - './config:/var/www/html/config'
+      - './src:/var/www/html/src'
+      - './tests:/var/www/html/tests'
+      - './tests/docker/7.3/phpunit.xml:/var/www/html/phpunit.xml'
+    entrypoint: php ./vendor/phpunit/phpunit/phpunit --configuration ./phpunit.xml
+  "7.4":
+    build: ./tests/docker/7.4/
+    volumes:
+      - './config:/var/www/html/config'
+      - './src:/var/www/html/src'
+      - './tests:/var/www/html/tests'
+      - './tests/docker/7.4/phpunit.xml:/var/www/html/phpunit.xml'
+    entrypoint: php ./vendor/phpunit/phpunit/phpunit --configuration ./phpunit.xml
+  "8.0":
+    build: ./tests/docker/8.0/
+    volumes:
+      - './config:/var/www/html/config'
+      - './src:/var/www/html/src'
+      - './tests:/var/www/html/tests'
+      - './tests/docker/8.0/phpunit.xml:/var/www/html/phpunit.xml'
+    entrypoint: php ./vendor/phpunit/phpunit/phpunit --configuration ./phpunit.xml
+  "8.1":
+    build: ./tests/docker/8.1/
+    volumes:
+      - './config:/var/www/html/config'
+      - './src:/var/www/html/src'
+      - './tests:/var/www/html/tests'
+      - './tests/docker/8.1/phpunit.xml:/var/www/html/phpunit.xml'
+    entrypoint: php ./vendor/phpunit/phpunit/phpunit --configuration ./phpunit.xml
+  "8.2":
+    build: ./tests/docker/8.2/
+    volumes:
+      - './config:/var/www/html/config'
+      - './src:/var/www/html/src'
+      - './tests:/var/www/html/tests'
+      - './tests/docker/8.2/phpunit.xml:/var/www/html/phpunit.xml'
+    entrypoint: php ./vendor/phpunit/phpunit/phpunit --configuration ./phpunit.xml
