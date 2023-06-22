@@ -1,4 +1,7 @@
 <?php
+/**
+ * @noinspection PhpUnused
+ */
 
 namespace Taxusorg\XunSearchLaravel;
 
@@ -102,6 +105,10 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
         return isset($this->{$offset});
     }
 
+    /**
+     * @noinspection PhpLanguageLevelInspection
+     */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if ($offset == 'models') return $this->getModels();
@@ -112,7 +119,9 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
 
     /**
      * @throws Exception
+     * @noinspection PhpLanguageLevelInspection
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         throw new Exception('disable');
@@ -120,7 +129,9 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
 
     /**
      * @throws Exception
+     * @noinspection PhpLanguageLevelInspection
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         throw new Exception('disable');
