@@ -1,6 +1,7 @@
 <?php
 /**
  * @noinspection PhpUnused
+ * @noinspection PhpFullyQualifiedNameUsageInspection
  */
 
 namespace Taxusorg\XunSearchLaravel;
@@ -11,6 +12,7 @@ use Closure;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\LazyCollection;
 use IteratorAggregate;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
@@ -65,6 +67,23 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
 
         return tap(
             $this->engine->map($this->builder, $this, $this->builder->model),
+            function () use ($bak) {
+                $this->builder->query($bak);
+            }
+        );
+    }
+
+    public function getLazyModels(?Closure $callback = null): LazyCollection
+    {
+        $bak = null;
+        if ($callback) {
+            $bak = $this->builder->queryCallback;
+
+            $this->builder->query($callback);
+        }
+
+        return tap(
+            $this->engine->lazyMap($this->builder, $this, $this->builder->model),
             function () use ($bak) {
                 $this->builder->query($bak);
             }
