@@ -249,6 +249,9 @@ Builder 拓展的方法
 
 更新
 --------
+5.0.x
+* 支持 Scout:10.*
+
 4.3.x
 * 重命名 XunSearchTrait 静态方法
 
