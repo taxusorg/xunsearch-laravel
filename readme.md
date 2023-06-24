@@ -104,11 +104,11 @@ class Blog extends Model implements XunSearchModelInterface
 
 每个字段可以设置 `字段类型`、`索引类型`和`分词器`。设置关键词已经在接口中定义常量，前缀分别为：
 
-| 设置类型 | 前缀 |
-| --- | --- |
-| 字段类型 | XUNSEARCH_TYPE_ |
-| 索引类型 | XUNSEARCH_INDEX_ |
-| 分词器 | XUNSEARCH_TOKENIZER_ |
+| 设置类型 | 前缀                   |
+|------|----------------------|
+| 字段类型 | XUNSEARCH_TYPE_      |
+| 索引类型 | XUNSEARCH_INDEX_     |
+| 分词器  | XUNSEARCH_TOKENIZER_ |
 
 设置的字段类型的具体效果，查看 [XunSearch 官方文档][xun_search_index]。
 
@@ -128,12 +128,12 @@ class Blog extends Model implements XunSearchModelInterface
 
 已注册的宏
 
-| 方法 | 描述 |
-|---|---|
-| getXSTotal | 获取该库中的总文档数 |
-| getXS | 获取 Client 对象 |
+| 方法          | 描述             |
+|-------------|----------------|
+| getXSTotal  | 获取该库中的总文档数     |
+| getXS       | 获取 Client 对象   |
 | getXSSearch | 获取 XSSearch 对象 |
-| getXSIndex | 获取 XSIndex 对象 |
+| getXSIndex  | 获取 XSIndex 对象  |
 
 Client 对象是对 XS 对象的包装，包含 XS 对象的属性和行为，可以当作 XS 对象使用。
 
@@ -172,12 +172,12 @@ $blogs = $results->getModels();
 
 Results 对象的方法
 
-| 方法 | 描述 |
-|---|---|
-| getIds | 获取检索结果的主键集合 |
-| getModels | 获取检索结果的 Model 集合 |
-| getTotal | 获取检索的总数 |
-| toArray | 获取检索结果的 XSDocument 数组 |
+| 方法        | 描述                    |
+|-----------|-----------------------|
+| getIds    | 获取检索结果的主键集合           |
+| getModels | 获取检索结果的 Model 集合      |
+| getTotal  | 获取检索的总数               |
+| toArray   | 获取检索结果的 XSDocument 数组 |
 
 拓展查询
 ------
@@ -211,36 +211,36 @@ Blog::search('word')->range('id', 20, 60)->get();
 
 Builder 拓展的方法
 
-| 方法 | 描述 |
-|---|---|
-| setFuzzy | 开启模糊搜索 |
-| setCutOff | 设置”百分比“和”权重“剔除参数 |
-| setRequireMatchedTerm | 是否在搜索结果文档中返回匹配词表 |
-| setWeightingScheme | 设置检索匹配的权重方案 |
-| setAutoSynonyms | 开启自动同义词搜索功能 |
-| setSynonymScale | 设置同义词搜索的权重比例 |
-| setSort | 设置多字段组合排序方式。该方法会覆盖 orderBy 方法。若无必要使用 orderBy 就行 |
-| setDocOrder | 设置结果按索引入库先后排序 |
-| setCollapse | 设置折叠搜索结果 |
-| addRange | 添加搜索过滤区间或范围 |
-| addWeight | 添加权重索引词 |
-| setScwsMulti | 设置当前搜索语句的分词复合等级 |
+| 方法                    | 描述                                              |
+|-----------------------|-------------------------------------------------|
+| setFuzzy              | 开启模糊搜索                                          |
+| setCutOff             | 设置”百分比“和”权重“剔除参数                                |
+| setRequireMatchedTerm | 是否在搜索结果文档中返回匹配词表                                |
+| setWeightingScheme    | 设置检索匹配的权重方案                                     |
+| setAutoSynonyms       | 开启自动同义词搜索功能                                     |
+| setSynonymScale       | 设置同义词搜索的权重比例                                    |
+| setSort               | 设置多字段组合排序方式。该方法会覆盖 orderBy 方法。若无必要使用 orderBy 就行 |
+| setDocOrder           | 设置结果按索引入库先后排序                                   |
+| setCollapse           | 设置折叠搜索结果                                        |
+| addRange              | 添加搜索过滤区间或范围                                     |
+| addWeight             | 添加权重索引词                                         |
+| setScwsMulti          | 设置当前搜索语句的分词复合等级                                 |
 
 `XunSearchTrait` 中包含一些静态方法，可以获取 Client 对象等。
 
-| 方法 | 描述 |
-|---|---|
-| XS | 获取 Client 对象 |
-| XSSearch | 获取 XSSearch 对象 |
-| XSIndex | 获取 XSIndex 对象 |
-| XSTotal | 获取该库中的总文档数 |
-| search | 返回 Builder 对象 |
-| XSAllSynonyms | 获取当前库内的全部同义词列表 |
-| XSSynonyms | 获取指定词汇的同义词列表 |
-| XSHotQuery | 获取热门搜索词列表 |
-| XSRelatedQuery | 获取相关搜索词列表 |
-| XSExpandedQuery | 获取展开的搜索词列表 |
-| XSCorrectedQuery | 获取修正后的搜索词列表 |
+| 方法               | 描述             |
+|------------------|----------------|
+| XS               | 获取 Client 对象   |
+| XSSearch         | 获取 XSSearch 对象 |
+| XSIndex          | 获取 XSIndex 对象  |
+| XSTotal          | 获取该库中的总文档数     |
+| search           | 返回 Builder 对象  |
+| XSAllSynonyms    | 获取当前库内的全部同义词列表 |
+| XSSynonyms       | 获取指定词汇的同义词列表   |
+| XSHotQuery       | 获取热门搜索词列表      |
+| XSRelatedQuery   | 获取相关搜索词列表      |
+| XSExpandedQuery  | 获取展开的搜索词列表     |
+| XSCorrectedQuery | 获取修正后的搜索词列表    |
 
 注意：
 通过静态方法获取 Client 对象时，同等于通过 `search` 方法获取 Builder 对象，再通过 `Builder::getXS` 获取 Client。
