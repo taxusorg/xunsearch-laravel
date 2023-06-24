@@ -249,6 +249,9 @@ Builder 拓展的方法
 
 更新
 --------
+4.3.x
+* 重命名 XunSearchTrait 静态方法
+
 4.2.x
 * Results 实现 Arrayable 接口， 方法 getArray 换成 toArray
 

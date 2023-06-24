@@ -38,7 +38,7 @@
             ]
         },
         "branch-alias": {
-            "dev-master": "v4.1.x-dev"
+            "dev-master": "v4.3.x-dev"
         }
     }
 }
