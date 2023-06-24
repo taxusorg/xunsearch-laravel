@@ -36,7 +36,7 @@ class Client
 
     public function __call($name, $arguments)
     {
-        return $this->xs->{$name}($arguments);
+        return $this->xs->{$name}(...$arguments);
     }
 
     public function __get($name)
