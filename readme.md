@@ -177,6 +177,7 @@ Results 对象的方法
 | getIds        | 获取检索结果的主键集合                 |
 | getModels     | 获取检索模型结果的 Collection 集合     |
 | getLazyModels | 获取检索模型结果的 LazyCollection 集合 |
+| query         | 替换检索结果转换模型查询闭包              |
 | getTotal      | 获取检索的总数                     |
 | toArray       | 获取检索结果的 XSDocument 数组       |
 
@@ -202,13 +203,27 @@ $callback = function ($query) {
     // $query->where(); // 添加查询条件
 }
 
-$blog = Blog::search('word')->query($callback)->get();
+$blogs = Blog::search('word')->query($callback)->get();
 $result = Blog::search('word')->query($callback)->raw();
-$blog = $result->getModels();
+$blogs = $result->getModels();
 // 以上都会调用 $callback。下边的形式 $callback 被临时覆盖，只调用后边传入的闭包。
-$blog = $result->getModels(function ($query) {
+$blogs = $result->getModels(function ($query) {
     // $query->where(); // 添加查询条件
 });
+```
+
+如果需要在 Results 对象中永久替换查询闭包函数，使用 `query` 方法传入闭包。
+
+```php
+$callback = function ($query) {
+    // $query->where(); // 添加查询条件
+}
+
+$result = Blog::search('word')->query($callback)->raw();
+// 传入闭包进行替换，且永久生效
+$blogs = $result->query(function ($query) {
+    // $query->where(); // 添加查询条件
+})->getModels();
 ```
 
 拓展查询
