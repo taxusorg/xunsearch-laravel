@@ -44,6 +44,13 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
         $this->builder = $builder;
     }
 
+    public function query(?Closure $closure = null): Results
+    {
+        $this->builder->query($closure);
+
+        return $this;
+    }
+
     /**
      * @return \Illuminate\Support\Collection
      */
