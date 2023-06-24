@@ -66,7 +66,7 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
         return tap(
             $this->engine->map($this->builder, $this, $this->builder->model),
             function () use ($bak) {
-                if ($bak !== null) $this->builder->query($bak);
+                $this->builder->query($bak);
             }
         );
     }
