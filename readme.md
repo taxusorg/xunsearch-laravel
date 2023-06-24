@@ -179,6 +179,37 @@ Results 对象的方法
 | getTotal  | 获取检索的总数               |
 | toArray   | 获取检索结果的 XSDocument 数组 |
 
+### 检索结果转换模型查询闭包
+
+通过 Results 中的 `getModels` 方法，把搜索结果转换成 `Model` 集合时，可以传入闭包函数，对转换过程的查询进行控制。该闭包是一次性生效的。
+
+```php
+$results = Blog::search('word')->raw();
+$blogs = $results->getModels(function ($query) {
+    /** @var \Illuminate\Database\Eloquent\Builder $query */
+    // $query->where(); // 添加查询条件
+});
+// 再次转换不添加查询条件
+$blogs = $results->getModels();
+```
+
+传入 `getModels` 闭包类似于在查询过程中 `query` 方法指定查询闭包。但是，在 `query` 传入的闭包不是一次性生效的。而且，该闭包会临时被 `getModels` 方法传入的闭包替换。
+
+```php
+$callback = function ($query) {
+    /** @var \Illuminate\Database\Eloquent\Builder $query */
+    // $query->where(); // 添加查询条件
+}
+
+$blog = Blog::search('word')->query($callback)->get();
+$result = Blog::search('word')->query($callback)->raw();
+$blog = $result->getModels();
+// 以上都会调用 $callback。下边的形式 $callback 被临时覆盖，只调用后边传入的闭包。
+$blog = $result->getModels(function ($query) {
+    // $query->where(); // 添加查询条件
+});
+```
+
 拓展查询
 ------
 
