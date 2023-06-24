@@ -172,16 +172,17 @@ $blogs = $results->getModels();
 
 Results 对象的方法
 
-| 方法        | 描述                    |
-|-----------|-----------------------|
-| getIds    | 获取检索结果的主键集合           |
-| getModels | 获取检索结果的 Model 集合      |
-| getTotal  | 获取检索的总数               |
-| toArray   | 获取检索结果的 XSDocument 数组 |
+| 方法            | 描述                          |
+|---------------|-----------------------------|
+| getIds        | 获取检索结果的主键集合                 |
+| getModels     | 获取检索模型结果的 Collection 集合     |
+| getLazyModels | 获取检索模型结果的 LazyCollection 集合 |
+| getTotal      | 获取检索的总数                     |
+| toArray       | 获取检索结果的 XSDocument 数组       |
 
 ### 检索结果转换模型查询闭包
 
-通过 Results 中的 `getModels` 方法，把搜索结果转换成 `Model` 集合时，可以传入闭包函数，对转换过程的查询进行控制。该闭包是一次性生效的。
+通过 Results 中的 `getModels` 或 `getLazyModels` 方法，把搜索结果转换成 `Model` 集合时，可以传入闭包函数，对转换过程的查询进行控制。该闭包是一次性生效的。
 
 ```php
 $results = Blog::search('word')->raw();
