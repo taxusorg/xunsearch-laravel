@@ -26,10 +26,10 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
     protected $docs = [];
 
     /**
-     * @param Engine $engine
-     * @param Builder $builder
-     * @param int $total
-     * @param XSDocument[] $docs
+     * @param  Engine  $engine
+     * @param  Builder  $builder
+     * @param  int  $total
+     * @param  XSDocument[]  $docs
      */
     public function __construct(Engine $engine, Builder $builder, int $total, array $docs = [])
     {
@@ -42,6 +42,11 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
     public function setBuilder(Builder $builder)
     {
         $this->builder = $builder;
+    }
+
+    public function getQueryCallback(): ?Closure
+    {
+        return $this->builder->queryCallback;
     }
 
     public function query(?Closure $closure = null): Results
@@ -60,7 +65,7 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
     }
 
     /**
-     * @param Closure|null $callback
+     * @param  Closure|null  $callback
      * @return Collection
      */
     public function getModels(?Closure $callback = null): Collection
@@ -125,8 +130,15 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
 
     public function offsetExists($offset): bool
     {
-        if ($offset == 'models') return true;
-        if ($offset == 'ids') return true;
+        if ($offset == 'models') {
+            return true;
+        }
+        if ($offset == 'ids') {
+            return true;
+        }
+        if ($offset == 'queryCallback') {
+            return (bool) $this->getQueryCallback();
+        }
 
         return isset($this->{$offset});
     }
@@ -137,8 +149,15 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
-        if ($offset == 'models') return $this->getModels();
-        if ($offset == 'ids') return $this->getIds();
+        if ($offset == 'models') {
+            return $this->getModels();
+        }
+        if ($offset == 'ids') {
+            return $this->getIds();
+        }
+        if ($offset == 'queryCallback') {
+            return $this->getQueryCallback();
+        }
 
         return $this->{$offset} ?? null;
     }
