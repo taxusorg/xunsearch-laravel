@@ -5,7 +5,7 @@ namespace Tests;
 use PHPUnit\Framework\TestCase;
 use Tests\Src\SearchModelWithTrait;
 
-class MethodsTest extends TestCase
+class BuilderMethodsTest extends TestCase
 {
     use WithApplication;
 
