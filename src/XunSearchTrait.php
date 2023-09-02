@@ -1,7 +1,10 @@
 <?php
+
 namespace Taxusorg\XunSearchLaravel;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Laravel\Scout\Searchable;
+use Taxusorg\XunSearchLaravel\Libs\Helper;
 use XS;
 use XSIndex;
 use XSSearch;
@@ -16,7 +19,7 @@ trait XunSearchTrait
     use Searchable;
 
     /**
-     * @param string|null $query
+     * @param  string|null  $query
      * @return XSSearch
      */
     public static function XSSearch(?string $query = null): XSSearch
@@ -49,8 +52,8 @@ trait XunSearchTrait
     }
 
     /**
-     * @param string $query
-     * @param null $callback
+     * @param  string  $query
+     * @param  null  $callback
      * @return Builder
      */
     public static function search($query = '', $callback = null): Builder
@@ -59,7 +62,7 @@ trait XunSearchTrait
             'model' => new static,
             'query' => $query,
             'callback' => $callback,
-            'softDelete'=> static::usesSoftDelete() && config('scout.soft_delete', false),
+            'softDelete' => static::usesSoftDelete() && config('scout.soft_delete', false),
         ]);
     }
 
@@ -67,9 +70,9 @@ trait XunSearchTrait
      * 获取当前库内的全部同义词列表
      * $limit 为 0 则默认为 100
      *
-     * @param int $limit
-     * @param int $offset
-     * @param bool $stemmed
+     * @param  int  $limit
+     * @param  int  $offset
+     * @param  bool  $stemmed
      * @return array
      */
     public static function XSAllSynonyms(int $limit = 0, int $offset = 0, bool $stemmed = false): array
@@ -78,9 +81,23 @@ trait XunSearchTrait
     }
 
     /**
-     * @param int $limit
-     * @param int $offset
-     * @param bool $stemmed
+     * 分页获取当前库内的全部同义词列表
+     *
+     * @throws BindingResolutionException
+     */
+    public static function XSAllSynonymsPaginate(
+        bool $stemmed = false,
+        $perPage = null,
+        $pageName = 'page',
+        $page = null
+    ) {
+        return Helper::allSynonymsPaginate(static::XSSearch(), $stemmed, $perPage, $pageName, $page);
+    }
+
+    /**
+     * @param  int  $limit
+     * @param  int  $offset
+     * @param  bool  $stemmed
      * @return array
      * @deprecated 使用 XSAllSynonyms 代替
      */
@@ -92,7 +109,7 @@ trait XunSearchTrait
     /**
      * 获取指定词汇的同义词列表
      *
-     * @param string $term
+     * @param  string  $term
      * @return string[]
      */
     public static function XSSynonyms(string $term): array
@@ -101,7 +118,7 @@ trait XunSearchTrait
     }
 
     /**
-     * @param string $term
+     * @param  string  $term
      * @return string[]
      * @deprecated 使用 XSSynonyms 代替
      */
@@ -114,8 +131,8 @@ trait XunSearchTrait
      * 获取热门搜索词列表
      * 最多 50 个
      *
-     * @param int $limit
-     * @param string|'total'|'lastnum'|'currnum' $type
+     * @param  int  $limit
+     * @param  string|'total'|'lastnum'|'currnum' $type
      * @return string[]
      * @throws XSException
      */
@@ -125,8 +142,8 @@ trait XunSearchTrait
     }
 
     /**
-     * @param int $limit
-     * @param string|'total'|'lastnum'|'currnum' $type
+     * @param  int  $limit
+     * @param  string|'total'|'lastnum'|'currnum' $type
      * @return string[]
      * @throws XSException
      * @deprecated 使用 XSHotQuery 代替
@@ -139,8 +156,8 @@ trait XunSearchTrait
     /**
      * 获取相关搜索词列表
      *
-     * @param string $query
-     * @param int $limit
+     * @param  string  $query
+     * @param  int  $limit
      * @return string[]
      * @throws XSException
      */
@@ -150,8 +167,8 @@ trait XunSearchTrait
     }
 
     /**
-     * @param string $query
-     * @param int $limit
+     * @param  string  $query
+     * @param  int  $limit
      * @return string[]
      * @throws XSException
      * @deprecated 使用 XSRelatedQuery 代替
@@ -165,8 +182,8 @@ trait XunSearchTrait
      * 获取展开的搜索词列表
      * 输入前缀，返回补全的搜索词，最多 20 个
      *
-     * @param string $query
-     * @param int $limit
+     * @param  string  $query
+     * @param  int  $limit
      * @return string[]
      * @throws XSException
      */
@@ -176,8 +193,8 @@ trait XunSearchTrait
     }
 
     /**
-     * @param string $query
-     * @param int $limit
+     * @param  string  $query
+     * @param  int  $limit
      * @return string[]
      * @throws XSException
      * @deprecated 使用 XSExpandedQuery 代替
@@ -190,7 +207,7 @@ trait XunSearchTrait
     /**
      * 获取修正后的搜索词列表
      *
-     * @param string $query
+     * @param  string  $query
      * @return string[]
      * @throws XSException
      */
@@ -202,7 +219,7 @@ trait XunSearchTrait
     /**
      * 获取修正后的搜索词列表
      *
-     * @param string $query
+     * @param  string  $query
      * @return string[]
      * @throws XSException
      * @deprecated 使用 XSCorrectedQuery 代替
