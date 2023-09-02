@@ -70,10 +70,8 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
      */
     public function getModels(?Closure $callback = null): Collection
     {
-        $bak = null;
+        $bak = $this->builder->queryCallback;
         if ($callback) {
-            $bak = $this->builder->queryCallback;
-
             $this->builder->query($callback);
         }
 
@@ -87,10 +85,8 @@ class Results implements IteratorAggregate, ArrayAccess, Arrayable
 
     public function getLazyModels(?Closure $callback = null): LazyCollection
     {
-        $bak = null;
+        $bak = $this->builder->queryCallback;
         if ($callback) {
-            $bak = $this->builder->queryCallback;
-
             $this->builder->query($callback);
         }
 
