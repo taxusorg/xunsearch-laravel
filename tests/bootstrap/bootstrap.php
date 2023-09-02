@@ -27,6 +27,7 @@ function createApp()
     $app->singleton('config', function () {
         $config = new Config();
         $config->set('scout.driver', 'xunsearch');
+        $config->set('scout.soft_delete', true);
         $config->set('app.providers', [
             ScoutServiceProvider::class,
             XunSearchServiceProvider::class,
