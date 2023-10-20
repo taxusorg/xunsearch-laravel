@@ -8,21 +8,19 @@ XunSearch 的安装，具体查看 [XunSearch 的官方文档][xun_search_index]
 
 laravel/scout 的安装和使用，查看 [laravel/scout 的官方文档][laravel_scout_doc]。
 
+### 项目地址
+
+- [github](https://github.com/taxusorg/xunsearch-laravel)
+- [gitee](https://gitee.com/taxusorg/xunsearch-laravel)
+
+github 不稳定的时候可以上 gitee 代替。有问题可以创建 [issues](https://gitee.com/taxusorg/xunsearch-laravel/issues) 反馈
+
 安装
 --------
 
 使用 composer
 ```shell script
 composer require taxusorg/xunsearch-laravel
-```
-
-在配置文件中添加服务提供者（Laravel5.5 及以上 有自动添加）
-```php
-'providers' => [
-    //...
-    Taxusorg\XunSearchLaravel\XunSearchServiceProvider::class,
-    //...
-],
 ```
 
 复制配置文件到配置目录，配置文件内容不多，而且可以在 `.env` 文件中设置。手动复制或者使用命令复制：
