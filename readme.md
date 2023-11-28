@@ -249,7 +249,7 @@ class Blog extends Model implements XunSearchModelInterface
 例如设定 `id` 字段为 `self::XUNSEARCH_TYPE_NUMERIC`，在 `id` 大于 `20` 小于等于 `60` 的范围内搜索 `word`
 
 ```php
-Blog::search('word')->range('id', 20, 60)->get();
+Blog::search('word')->addRange('id', 20, 60)->get();
 ```
 
 除了 `title` 和 `body` 特殊字段， XunSearch 默认设定字段为 `string`，需要进行区间检索的字段，要设为 `numeric` 或者 `date` 才能正常检索。
