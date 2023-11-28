@@ -43,7 +43,7 @@
             ]
         },
         "branch-alias": {
-            "dev-master": "v5.0.x-dev"
+            "dev-master": "v5.x-dev"
         }
     }
 }
